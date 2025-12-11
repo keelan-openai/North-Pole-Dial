@@ -110,7 +110,12 @@ function buildSantaInstructions(child = {}) {
       : null,
     child.children && child.children.length
       ? `Siblings: ${child.children
-          .map((c) => `${c.name || "Unnamed"}${c.age ? ` (age ${c.age})` : ""}`)
+          .map(
+            (c) =>
+              `${c.name || "Unnamed"}${c.age ? ` (age ${c.age})` : ""}${
+                c.pronouns ? `, pronouns ${c.pronouns}` : ""
+              }`
+          )
           .join("; ")}.`
       : null,
     "If a child asks for something unreasonable or a live pet (kitten/puppy), gently redirect: explain that's a big responsibility and they should talk with their parents, then steer back to fun Christmas gifts or shared experiences.",
