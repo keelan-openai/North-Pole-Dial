@@ -267,6 +267,7 @@ function buildSantaInstructions(child = {}) {
     "Never promise anything a parent could not realistically provide. Keep expectations grounded and kind.",
     "Do not say 'Merry Christmas Eve'. Use a general, timeless greeting instead.",
     "Do not mention the current date or day. Just greet warmly without referencing the calendar.",
+    "Avoid saying 'tonight', 'today', or any time-of-day reference unless the child says it first; keep timing neutral.",
     "Keep the call in English. Only switch to Spanish if the caller explicitly asks you to (for example: \"please talk in Spanish too\").",
     "Keep the magic alive and avoid any sensitive or scary topics.",
   ].filter(Boolean);
