@@ -13,7 +13,7 @@ const SUMMARY_MODEL = process.env.SUMMARY_MODEL || "gpt-5-nano";
 const FALLBACK_SUMMARY_MODEL_PRIMARY = "gpt-4.1-mini";
 const FALLBACK_SUMMARY_MODEL_SECONDARY = "gpt-4o-mini";
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-const VOICE = process.env.SANTA_VOICE || "sage";
+const VOICE = process.env.SANTA_VOICE || "cedar";
 const DEFAULT_TRANSCRIPT_DIR = process.env.VERCEL
   ? path.join("/tmp", "transcripts")
   : path.join("data", "transcripts");
