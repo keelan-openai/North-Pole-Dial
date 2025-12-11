@@ -306,6 +306,12 @@ body {
   gap: 10px;
 }
 
+.three-up {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+}
+
 .field {
   display: flex;
   flex-direction: column;
@@ -323,13 +329,22 @@ body {
 
 .child-row {
   display: grid;
-  grid-template-columns: 1fr 120px auto;
+  grid-template-columns: 1.1fr 1fr 110px auto;
   gap: 8px;
   align-items: center;
 }
 
 .child-row input {
   height: 42px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(15, 31, 45, 0.18);
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: #0f1f2d;
+  font: inherit;
+  outline: none;
+  transition: border 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .remove-child {

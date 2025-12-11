@@ -122,10 +122,14 @@
           </div>
           <div class="collapsible" id="profile-body" hidden>
             <form id="child-form" class="form">
-              <div class="two-up">
+              <div class="three-up">
                 <label class="field">
                   <span>Name</span>
                   <input type="text" name="name" placeholder="Cindy Loo" />
+                </label>
+                <label class="field">
+                  <span>Pronouns</span>
+                  <input type="text" name="pronouns" placeholder="she/her" />
                 </label>
                 <label class="field">
                   <span>Age</span>
@@ -136,16 +140,13 @@
                 <p class="eyebrow">Other children (optional)</p>
                 <div class="child-row" data-child-row>
                   <input type="text" name="child-name" placeholder="Sibling name" />
+                  <input type="text" name="child-pronouns" placeholder="they/them" />
                   <input type="number" name="child-age" min="0" max="18" placeholder="Age" />
                   <button type="button" class="ghost small remove-child" aria-label="Remove child">Remove</button>
                 </div>
               </div>
               <button type="button" class="ghost small" id="add-child">Add another child</button>
               <div class="two-up">
-                <label class="field">
-                  <span>Pronouns</span>
-                  <input type="text" name="pronouns" placeholder="she/her" />
-                </label>
                 <label class="field">
                   <span>Favorites</span>
                   <input

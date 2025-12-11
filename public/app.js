@@ -385,6 +385,12 @@ function addChildRow(data = {}) {
   nameInput.placeholder = "Sibling name";
   nameInput.value = data.name || "";
 
+  const pronounsInput = document.createElement("input");
+  pronounsInput.type = "text";
+  pronounsInput.name = "child-pronouns";
+  pronounsInput.placeholder = "they/them";
+  pronounsInput.value = data.pronouns || "";
+
   const ageInput = document.createElement("input");
   ageInput.type = "number";
   ageInput.name = "child-age";
@@ -402,6 +408,7 @@ function addChildRow(data = {}) {
   });
 
   row.appendChild(nameInput);
+  row.appendChild(pronounsInput);
   row.appendChild(ageInput);
   row.appendChild(removeBtn);
   childListEl.appendChild(row);
@@ -416,8 +423,10 @@ function hydrateChildren(children = []) {
   const firstRow = childListEl.querySelector("[data-child-row]");
   if (firstRow) {
     const nameInput = firstRow.querySelector('input[name="child-name"]');
+    const pronounsInput = firstRow.querySelector('input[name="child-pronouns"]');
     const ageInput = firstRow.querySelector('input[name="child-age"]');
     if (nameInput) nameInput.value = children[0]?.name || "";
+    if (pronounsInput) pronounsInput.value = children[0]?.pronouns || "";
     if (ageInput) ageInput.value = children[0]?.age || "";
   }
   for (let i = 1; i < children.length; i++) {
@@ -431,9 +440,10 @@ function readChildren() {
   return rows
     .map((row) => {
       const name = row.querySelector('input[name="child-name"]')?.value.trim() || "";
+      const pronouns = row.querySelector('input[name="child-pronouns"]')?.value.trim() || "";
       const age = row.querySelector('input[name="child-age"]')?.value.trim() || "";
-      if (!name && !age) return null;
-      return { name, age };
+      if (!name && !age && !pronouns) return null;
+      return { name, age, pronouns };
     })
     .filter(Boolean);
 }
