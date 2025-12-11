@@ -166,7 +166,7 @@ async function startCall() {
   }
 
   state.connecting = true;
-  setStatus("Dialing the North Pole...");
+  setStatus("Dialing the North Pole... wait just a minute and Santa will say hello.");
   setConnection("Connecting");
   if (callAction) callAction.textContent = "Connecting...";
   updateButtons({ connecting: true });
