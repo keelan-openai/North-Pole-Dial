@@ -358,7 +358,8 @@ function handleRealtimeEvent(message) {
         resetIdleTimer();
         break;
       }
-      case "response.output_text.delta": {
+      case "response.output_text.delta":
+      case "response.text.delta": {
         const delta = normalizeFragment(payload.delta || payload.text);
         if (delta) {
           state.pendingSantaTranscript += delta;
@@ -366,6 +367,8 @@ function handleRealtimeEvent(message) {
         }
         break;
       }
+      case "response.text.done":
+      case "response.text.completed":
       case "response.output_text.done":
       case "response.output_text.completed":
       case "response.completed": {
@@ -384,7 +387,21 @@ function handleRealtimeEvent(message) {
         break;
       }
       default:
-        updateTranscriptLog();
+        // If the event carries text/transcript, try to use it as a fallback
+        if (payload) {
+          const text = normalizeFragment(payload.transcript || payload.text || payload.delta);
+          if (text) {
+            if (String(type || "").includes("input_audio_buffer")) {
+              state.transcriptHistory.user.push(text);
+              state.transcriptLog.push({ speaker: state.childName || "Child", text });
+              state.pendingUserTranscript = "";
+              setStatus("Santa is thinking");
+              updateSummary();
+            } else if (String(type || "").includes("response")) {
+              state.pendingSantaTranscript += text;
+            }
+          }
+        }
         break;
     }
     updateTranscriptLog();
