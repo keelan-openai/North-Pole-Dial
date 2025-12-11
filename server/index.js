@@ -10,7 +10,8 @@ const PORT = process.env.PORT || 3000;
 const MODEL = process.env.MODEL || "gpt-realtime";
 // Default summary model can be overridden via SUMMARY_MODEL env
 const SUMMARY_MODEL = process.env.SUMMARY_MODEL || "gpt-5-nano";
-const FALLBACK_SUMMARY_MODEL = "gpt-4.1-mini";
+const FALLBACK_SUMMARY_MODEL_PRIMARY = "gpt-4.1-mini";
+const FALLBACK_SUMMARY_MODEL_SECONDARY = "gpt-4o-mini";
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const VOICE = process.env.SANTA_VOICE || "cedar";
 const DEFAULT_TRANSCRIPT_DIR = process.env.VERCEL
@@ -139,25 +140,35 @@ app.post("/api/summarize", async (req, res) => {
     .join("\n");
 
   try {
-    const summary = await generateSummary({
+    const primary = await generateSummary({
       model,
       conversation,
       apiKey: OPENAI_API_KEY,
     });
-    return res.json({ summary });
-  } catch (firstError) {
-    console.warn("Primary summary model failed, trying fallback", firstError);
-    try {
-      const summary = await generateSummary({
-        model: FALLBACK_SUMMARY_MODEL,
-        conversation,
-        apiKey: OPENAI_API_KEY,
-      });
-      return res.json({ summary, model: FALLBACK_SUMMARY_MODEL });
-    } catch (error) {
-      console.error("Summary generation failed", error);
-      return res.status(500).json({ error: "Could not generate summary" });
+    if (primary && primary !== "Summary unavailable right now.") {
+      return res.json({ summary: primary, model });
     }
+    console.warn("Primary summary empty, trying fallbacks");
+    const fallback1 = await generateSummary({
+      model: FALLBACK_SUMMARY_MODEL_PRIMARY,
+      conversation,
+      apiKey: OPENAI_API_KEY,
+    });
+    if (fallback1 && fallback1 !== "Summary unavailable right now.") {
+      return res.json({ summary: fallback1, model: FALLBACK_SUMMARY_MODEL_PRIMARY });
+    }
+    const fallback2 = await generateSummary({
+      model: FALLBACK_SUMMARY_MODEL_SECONDARY,
+      conversation,
+      apiKey: OPENAI_API_KEY,
+    });
+    return res.json({
+      summary: fallback2 || "Summary unavailable right now.",
+      model: FALLBACK_SUMMARY_MODEL_SECONDARY,
+    });
+  } catch (error) {
+    console.error("Summary generation failed", error);
+    return res.status(500).json({ error: "Could not generate summary" });
   }
 });
 
@@ -192,7 +203,11 @@ async function generateSummary({ model, conversation, apiKey }) {
 
   const data = await response.json();
   const summary =
-    data?.choices?.[0]?.message?.content?.trim() || "Summary unavailable right now.";
+    data?.choices?.[0]?.message?.content?.trim() ||
+    data?.choices?.[0]?.message?.text?.trim() ||
+    data?.output_text?.[0]?.trim() ||
+    "Summary unavailable right now.";
+  console.log(`Summary (${model}):`, summary);
   return summary;
 }
 
