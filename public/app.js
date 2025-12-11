@@ -540,6 +540,22 @@ async function pushTranscript(entries) {
 }
 
 function endCall(reason = "") {
+  const flush = [];
+  if (state.pendingUserTranscript) {
+    const text = state.pendingUserTranscript;
+    flush.push({ speaker: state.childName || "Child", text });
+    state.transcriptHistory.user.push(text);
+    state.pendingUserTranscript = "";
+  }
+  if (state.pendingSantaTranscript) {
+    const text = state.pendingSantaTranscript;
+    flush.push({ speaker: "Santa", text });
+    state.transcriptHistory.santa.push(text);
+    state.pendingSantaTranscript = "";
+  }
+  if (flush.length) {
+    pushTranscript(flush);
+  }
   cleanupConnection();
   state.connected = false;
   setStatus(reason || "Call ended");
