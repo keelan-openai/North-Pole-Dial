@@ -385,6 +385,7 @@ function handleRealtimeEvent(message) {
       default:
         break;
     }
+    updateTranscriptLog();
   } catch (error) {
     console.debug("Non-JSON realtime message", message);
   }
