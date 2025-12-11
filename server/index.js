@@ -7,10 +7,10 @@ const { createTranscriptLogger } = require("./transcriptLogger");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const MODEL =
-  process.env.MODEL || "gpt-realtime";
+const MODEL = process.env.MODEL || "gpt-realtime";
 // Default summary model can be overridden via SUMMARY_MODEL env
 const SUMMARY_MODEL = process.env.SUMMARY_MODEL || "gpt-5-nano";
+const FALLBACK_SUMMARY_MODEL = "gpt-4.1-mini";
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const VOICE = process.env.SANTA_VOICE || "cedar";
 const DEFAULT_TRANSCRIPT_DIR = process.env.VERCEL
@@ -139,43 +139,62 @@ app.post("/api/summarize", async (req, res) => {
     .join("\n");
 
   try {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${OPENAI_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model,
-        messages: [
-          {
-            role: "system",
-            content:
-              "You are Santa's note-taker. Write a concise, parent-friendly call summary in 2-3 sentences. Include kids' names/pronouns/ages if present, key wishlist items, favorites, wins, and any boundaries or redirections Santa gave. Do not promise gifts. Keep it under 80 words.",
-          },
-          {
-            role: "user",
-            content: `Conversation transcript:\n${conversation}\n\nReturn only the summary text.`,
-          },
-        ],
-        max_completion_tokens: 160,
-      }),
+    const summary = await generateSummary({
+      model,
+      conversation,
+      apiKey: OPENAI_API_KEY,
     });
-
-    if (!response.ok) {
-      const errText = await response.text();
-      return res.status(response.status).json({ error: errText || "Summary failed" });
-    }
-
-    const data = await response.json();
-    const summary =
-      data?.choices?.[0]?.message?.content?.trim() || "Summary unavailable right now.";
     return res.json({ summary });
-  } catch (error) {
-    console.error("Summary generation failed", error);
-    return res.status(500).json({ error: "Could not generate summary" });
+  } catch (firstError) {
+    console.warn("Primary summary model failed, trying fallback", firstError);
+    try {
+      const summary = await generateSummary({
+        model: FALLBACK_SUMMARY_MODEL,
+        conversation,
+        apiKey: OPENAI_API_KEY,
+      });
+      return res.json({ summary, model: FALLBACK_SUMMARY_MODEL });
+    } catch (error) {
+      console.error("Summary generation failed", error);
+      return res.status(500).json({ error: "Could not generate summary" });
+    }
   }
 });
+
+async function generateSummary({ model, conversation, apiKey }) {
+  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model,
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are Santa's note-taker. Write a concise, parent-friendly call summary in 2-3 sentences. Include kids' names/pronouns/ages if present, key wishlist items, favorites, wins, and any boundaries or redirections Santa gave. Do not promise gifts. Keep it under 80 words.",
+        },
+        {
+          role: "user",
+          content: `Conversation transcript:\n${conversation}\n\nReturn only the summary text.`,
+        },
+      ],
+      max_completion_tokens: 160,
+    }),
+  });
+
+  if (!response.ok) {
+    const errText = await response.text();
+    throw new Error(errText || "Summary failed");
+  }
+
+  const data = await response.json();
+  const summary =
+    data?.choices?.[0]?.message?.content?.trim() || "Summary unavailable right now.";
+  return summary;
+}
 
 // Fallback to index.html for unknown routes (simple SPA support)
 app.get("*", (_req, res) => {
@@ -191,6 +210,7 @@ function buildSantaInstructions(child = {}) {
     "You are Santa Claus on a cozy Christmas Eve phone call.",
     "Be warm, playful, and brief. Use lots of cheerful energy but keep answers concise for a real call cadence.",
     "Sound like an older Saint Nick: deep, warm baritone with audible age and gentle gravel. Keep a steady pace with short, friendly sentences.",
+    "Make your voice feel grandfatherly and seasoned: slower cadence, soft rasp, gentle ho-ho chuckles, and kindly patience.",
     "Sprinkle in sound effects with your voice (bells, sleigh, elves cheering) when it feels fun.",
     "Ask curious, gentle questions throughout: what they would like for Christmas, their favorite things, what made them proud, and what they'd enjoy doing with family. Keep the back-and-forth lively.",
     summarizeProfile(child),
