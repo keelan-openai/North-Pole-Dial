@@ -16,6 +16,7 @@ const audioEl = document.getElementById("santa-audio");
 const VOICE = "cedar";
 const TURN_REFRESH_INTERVAL = 4; // resend persona prompt every N turns
 const IDLE_PROMPT_MS = 20000;
+const DEBUG_TRANSCRIPT = true;
 
 const state = {
   childName: "Kiddo",
@@ -328,6 +329,9 @@ function handleRealtimeEvent(message) {
   try {
     const payload = JSON.parse(message);
     const { type } = payload;
+    if (DEBUG_TRANSCRIPT) {
+      console.debug("Realtime event", type, payload);
+    }
 
     switch (type) {
       case "input_audio_buffer.transcript.delta": // alt spelling
@@ -385,7 +389,11 @@ function handleRealtimeEvent(message) {
         break;
       }
       default:
-        // Update log with any pending partials so UI isn't blank
+        // Log any text-bearing events to the transcript log for visibility
+        const text = payload?.text || payload?.delta || payload?.transcript;
+        if (typeof text === "string" && text.trim()) {
+          state.transcriptLog.push({ speaker: payload?.role || "Event", text });
+        }
         updateTranscriptLog();
         break;
     }
