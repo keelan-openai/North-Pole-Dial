@@ -296,8 +296,8 @@ function sendSessionConfig() {
 
 function sendWarmGreeting() {
   if (!state.dc || state.dc.readyState !== "open") return;
-  const name = state.childName || "there";
-  const greeting = `Ho ho ho! ${name}, it's Santa calling from the North Pole. I can hear you loud and clear.`;
+  const names = buildChildNamesList();
+  const greeting = `Ho ho ho! ${names}, it's Santa calling from the North Pole. I can hear you loud and clear.`;
   state.dc.send(
     JSON.stringify({
       type: "response.create",
@@ -371,6 +371,19 @@ function sendStyleNudge() {
     },
   };
   state.dc.send(JSON.stringify(payload));
+}
+
+function buildChildNamesList() {
+  const names = [];
+  if (state.childName) names.push(state.childName);
+  const siblings = state.childProfile?.children || [];
+  siblings.forEach((c) => {
+    if (c.name) names.push(c.name);
+  });
+  if (!names.length) return "there";
+  if (names.length === 1) return names[0];
+  const last = names.pop();
+  return `${names.join(", ")} and ${last}`;
 }
 
 function addChildRow(data = {}) {
