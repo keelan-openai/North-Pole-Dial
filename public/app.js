@@ -61,35 +61,24 @@ function setChildProfileForm(profile = {}) {
   formEl.notes.value = profile.notes || "";
 }
 
-async function loadProfile() {
+function persistProfile(profile) {
   try {
-    const res = await fetch("/api/profile");
-    if (!res.ok) throw new Error(await res.text());
-    const data = await res.json();
-    const child = data.child || {};
-    state.childProfile = child;
-    state.childName = child.name || "Kiddo";
-    setChildProfileForm(child);
-  } catch (error) {
-    console.error("Failed to load profile", error);
+    localStorage.setItem("santa-profile", JSON.stringify(profile));
+  } catch (_error) {
+    // ignore storage issues
   }
 }
 
-async function saveProfile(profile) {
+function restoreProfile() {
   try {
-    const res = await fetch("/api/profile", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ child: profile }),
-    });
-    if (!res.ok) throw new Error(await res.text());
-    const data = await res.json();
-    state.childProfile = data.child || profile;
-    state.childName = state.childProfile.name || "Kiddo";
-    setStatus("Profile saved for Santa");
-  } catch (error) {
-    console.error("Failed to save profile", error);
-    setStatus("Could not save profile");
+    const raw = localStorage.getItem("santa-profile");
+    if (!raw) return;
+    const profile = JSON.parse(raw);
+    state.childProfile = profile || {};
+    state.childName = profile?.name || "Kiddo";
+    setChildProfileForm(profile);
+  } catch (_error) {
+    // ignore storage issues
   }
 }
 
@@ -113,10 +102,13 @@ if (profileToggle && profileBody) {
 }
 
 if (formEl) {
-  formEl.addEventListener("submit", async (event) => {
+  formEl.addEventListener("submit", (event) => {
     event.preventDefault();
     const profile = readChildProfileForm();
-    await saveProfile(profile);
+    state.childProfile = profile;
+    state.childName = profile.name || "Kiddo";
+    persistProfile(profile);
+    setStatus("Profile saved for Santa");
   });
 }
 
@@ -140,10 +132,18 @@ async function startCall() {
   setConnection("Connecting");
   callAction.textContent = "Connecting...";
   updateButtons({ connecting: true });
+  if (formEl) {
+    const profile = readChildProfileForm();
+    state.childProfile = profile;
+    state.childName = profile.name || "Kiddo";
+    persistProfile(profile);
+  }
 
   try {
     const sessionResponse = await fetch("/api/session", {
       method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ child: state.childProfile }),
     });
 
     if (!sessionResponse.ok) {
@@ -393,4 +393,4 @@ function waitForIceGatheringComplete(pc) {
 }
 
 updateButtons({ connected: false, connecting: false });
-loadProfile();
+restoreProfile();

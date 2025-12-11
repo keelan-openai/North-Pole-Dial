@@ -1,7 +1,6 @@
 require("dotenv").config();
 const path = require("path");
 const crypto = require("crypto");
-const fs = require("fs");
 const express = require("express");
 const cors = require("cors");
 const { createTranscriptLogger } = require("./transcriptLogger");
@@ -12,11 +11,11 @@ const MODEL =
   process.env.MODEL || "gpt-4o-realtime-preview-2024-12-17";
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const VOICE = process.env.SANTA_VOICE || "cedar";
-const CHILD_PROFILE_PATH =
-  process.env.CHILD_PROFILE_PATH ||
-  path.join(__dirname, "..", "data", "child-profile.txt");
+const DEFAULT_TRANSCRIPT_DIR = process.env.VERCEL
+  ? path.join("/tmp", "transcripts")
+  : path.join("data", "transcripts");
 const TRANSCRIPT_DIR =
-  process.env.TRANSCRIPT_DIR || path.join("data", "transcripts");
+  process.env.TRANSCRIPT_DIR || DEFAULT_TRANSCRIPT_DIR;
 
 const transcriptLogger = createTranscriptLogger(
   path.resolve(__dirname, "..", TRANSCRIPT_DIR)
@@ -30,30 +29,8 @@ app.use(
   })
 );
 
-// Ensure the child profile file exists so the session handler can read it.
-ensureChildProfileFile(CHILD_PROFILE_PATH);
-
 app.get("/api/health", (_req, res) => {
   res.json({ ok: true });
-});
-
-// Read current child profile
-app.get("/api/profile", async (_req, res) => {
-  const child = await loadChildProfile(CHILD_PROFILE_PATH);
-  res.json({ child });
-});
-
-// Update child profile on disk
-app.post("/api/profile", async (req, res) => {
-  const child = req.body?.child || {};
-  try {
-    await saveChildProfile(CHILD_PROFILE_PATH, child);
-    const saved = await loadChildProfile(CHILD_PROFILE_PATH);
-    res.json({ child: saved });
-  } catch (error) {
-    console.error("Failed to save child profile", error);
-    res.status(500).json({ error: "Could not save child profile" });
-  }
 });
 
 /**
@@ -68,8 +45,8 @@ app.post("/api/session", async (req, res) => {
       .json({ error: "OPENAI_API_KEY missing from environment." });
   }
 
-  const child = await loadChildProfile(CHILD_PROFILE_PATH);
-  console.log("Loaded child profile", { child, from: CHILD_PROFILE_PATH });
+  const child = req.body?.child || {};
+  console.log("Loaded child profile", { child, source: "request" });
   const sessionId = crypto.randomUUID();
   await transcriptLogger.startSession(sessionId, child);
 
@@ -190,86 +167,4 @@ function summarizeProfile(child = {}) {
   return `Use these profile details without asking the parent: ${parts.join(
     "; "
   )}.`;
-}
-
-async function loadChildProfile(filePath) {
-  const profile = {};
-  try {
-    const raw = await fs.promises.readFile(filePath, "utf8");
-    raw
-      .split(/\r?\n/)
-      .map((line) => line.trim())
-      .filter(Boolean)
-      .forEach((line) => {
-        const match = line.match(/^([^:]+):\s*(.+)$/);
-        if (!match) return;
-        const key = match[1].toLowerCase();
-        const value = match[2].trim();
-        switch (key) {
-          case "name":
-            profile.name = value;
-            break;
-          case "age":
-            profile.age = value;
-            break;
-          case "pronouns":
-            profile.pronouns = value;
-            break;
-          case "wishlist":
-            profile.wishlist = value;
-            break;
-          case "favorites":
-            profile.favorites = value;
-            break;
-          case "wins":
-            profile.wins = value;
-            break;
-          case "notes":
-            profile.notes = value;
-            break;
-          default:
-            break;
-        }
-      });
-  } catch (error) {
-    console.warn(
-      `Child profile file not found or unreadable at ${filePath}; using defaults. Error: ${error.message}`
-    );
-  }
-  return profile;
-}
-
-function ensureChildProfileFile(filePath) {
-  try {
-    if (fs.existsSync(filePath)) return;
-    fs.mkdirSync(path.dirname(filePath), { recursive: true });
-    const template = [
-      "Name: Ava",
-      "Age: 7",
-      "Pronouns: she/her",
-      "Favorites: penguins, glitter slime, baking cookies",
-      "Wishlist: sparkly bike, illustrated storybooks, craft kits",
-      "Wins: learned to tie shoes, shared toys with cousins",
-      "Notes: keep it cozy, avoid surprises for mom, bedtime is soon",
-    ].join("\n");
-    fs.writeFileSync(filePath, template, "utf8");
-    console.log(`Created child profile template at ${filePath}`);
-  } catch (error) {
-    console.error(`Unable to create child profile at ${filePath}`, error);
-  }
-}
-
-async function saveChildProfile(filePath, child = {}) {
-  const lines = [
-    child.name ? `Name: ${child.name}` : null,
-    child.age ? `Age: ${child.age}` : null,
-    child.pronouns ? `Pronouns: ${child.pronouns}` : null,
-    child.favorites ? `Favorites: ${child.favorites}` : null,
-    child.wishlist ? `Wishlist: ${child.wishlist}` : null,
-    child.wins ? `Wins: ${child.wins}` : null,
-    child.notes ? `Notes: ${child.notes}` : null,
-  ].filter(Boolean);
-
-  fs.mkdirSync(path.dirname(filePath), { recursive: true });
-  await fs.promises.writeFile(filePath, lines.join("\n") + "\n", "utf8");
 }
