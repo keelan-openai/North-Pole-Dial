@@ -420,7 +420,7 @@ button {
 
 .santa-avatar .eyes {
   position: absolute;
-  top: 12px;
+  top: 14px;
   left: 20px;
   right: 20px;
   height: 12px;
@@ -441,7 +441,7 @@ button {
 .santa-avatar .face::before {
   content: "";
   position: absolute;
-  top: 28px;
+  top: 30px;
   left: 50%;
   width: 14px;
   height: 10px;
@@ -461,6 +461,34 @@ button {
   border-radius: 10px;
   transform: translateX(-50%);
   box-shadow: 0 0 6px rgba(0, 0, 0, 0.08);
+}
+
+.santa-avatar .cheek {
+  position: absolute;
+  top: 30px;
+  width: 12px;
+  height: 12px;
+  background: rgba(255, 166, 158, 0.7);
+  border-radius: 50%;
+}
+
+.santa-avatar .cheek.left {
+  left: 22px;
+}
+
+.santa-avatar .cheek.right {
+  right: 22px;
+}
+
+.santa-avatar .mouth {
+  position: absolute;
+  top: 44px;
+  left: 50%;
+  width: 26px;
+  height: 10px;
+  border-bottom: 3px solid #b35a3a;
+  border-radius: 0 0 12px 12px;
+  transform: translateX(-50%);
 }
 
 .santa-avatar .beard {
