@@ -410,6 +410,101 @@ button {
   height: 160px;
 }
 
+.santa-phone .lights.string {
+  position: absolute;
+  left: -18px;
+  right: -18px;
+  height: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  opacity: 0.25;
+  transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.santa-phone .lights.string.one {
+  top: 30px;
+}
+
+.santa-phone .lights.string.two {
+  top: 70px;
+}
+
+.santa-phone .lights.string::before,
+.santa-phone .lights.string::after {
+  content: "";
+  flex: 1;
+  border-bottom: 2px solid rgba(15, 31, 45, 0.15);
+}
+
+.santa-phone .lights.string::before {
+  margin-right: 6px;
+}
+
+.santa-phone .lights.string::after {
+  margin-left: 6px;
+}
+
+.santa-phone .lights.string::before,
+.santa-phone .lights.string::after {
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+}
+
+.santa-phone .lights.string::before {
+  border-color: rgba(15, 31, 45, 0.15);
+}
+
+.santa-phone .lights.string::after {
+  border-color: rgba(15, 31, 45, 0.15);
+}
+
+.santa-phone .lights.string.one span,
+.santa-phone .lights.string.two span {
+  display: block;
+  width: 10px;
+  height: 12px;
+  border-radius: 5px;
+  background: rgba(15, 31, 45, 0.15);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.08);
+}
+
+.santa-phone .lights.string.one span:nth-child(1) {
+  background: #ffb347;
+}
+.santa-phone .lights.string.one span:nth-child(2) {
+  background: #6ee7c2;
+}
+.santa-phone .lights.string.one span:nth-child(3) {
+  background: #ffd0d0;
+}
+.santa-phone .lights.string.one span:nth-child(4) {
+  background: #c7f9ff;
+}
+.santa-phone .lights.string.one span:nth-child(5) {
+  background: #ffefad;
+}
+
+.santa-phone .lights.string.two span:nth-child(1) {
+  background: #6ee7c2;
+}
+.santa-phone .lights.string.two span:nth-child(2) {
+  background: #ffb347;
+}
+.santa-phone .lights.string.two span:nth-child(3) {
+  background: #ffd0d0;
+}
+.santa-phone .lights.string.two span:nth-child(4) {
+  background: #ffefad;
+}
+.santa-phone .lights.string.two span:nth-child(5) {
+  background: #c7f9ff;
+}
+
+.santa-phone .lights.string.on {
+  opacity: 1;
+  filter: drop-shadow(0 0 8px rgba(255, 204, 92, 0.7));
+}
+
 .phone-halo {
   position: absolute;
   inset: -10px;
@@ -424,6 +519,7 @@ button {
   background: linear-gradient(135deg, #b3122f, #e73d59);
   border-radius: 22px;
   box-shadow: 0 14px 30px rgba(0, 0, 0, 0.2);
+  z-index: 1;
 }
 
 .santa-phone .phone-speaker {
@@ -473,6 +569,7 @@ button {
   left: -2px;
   width: 148px;
   height: 58px;
+  z-index: 2;
 }
 
 .santa-phone .hat-top {
