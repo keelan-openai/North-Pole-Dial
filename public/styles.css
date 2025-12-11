@@ -281,6 +281,8 @@ body {
   border: 1px dashed rgba(15, 31, 45, 0.25);
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.6);
+  max-height: 180px;
+  overflow-y: auto;
 }
 
 .summary-text {
@@ -296,7 +298,17 @@ body {
   border: 1px solid rgba(15, 31, 45, 0.15);
   border-radius: 10px;
   min-height: 44px;
-  white-space: pre-wrap;
+  max-height: 240px;
+  overflow-y: auto;
+  white-space: normal;
+}
+
+.turn {
+  margin-bottom: 8px;
+}
+
+.turn:last-child {
+  margin-bottom: 0;
 }
 
 .info-text {

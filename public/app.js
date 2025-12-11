@@ -349,7 +349,7 @@ function handleRealtimeEvent(message) {
           pushTranscript([{ speaker: state.childName || "Child", text: line }]);
           sendStyleNudge();
           state.transcriptHistory.user.push(line);
-          state.transcriptLog.push({ speaker: state.childName || "Child", text: line });
+          addLogEntry(state.childName || "Child", line);
           updateSummary();
           updateTranscriptLog();
         }
@@ -393,7 +393,7 @@ function handleRealtimeEvent(message) {
           if (text) {
             if (String(type || "").includes("input_audio_buffer")) {
               state.transcriptHistory.user.push(text);
-              state.transcriptLog.push({ speaker: state.childName || "Child", text });
+              addLogEntry(state.childName || "Child", text);
               state.pendingUserTranscript = "";
               setStatus("Santa is thinking");
               updateSummary();
@@ -554,8 +554,15 @@ function updateTranscriptLog() {
     temp.push({ speaker: "Santa", text: state.pendingSantaTranscript });
   }
   const recent = temp.slice(-12);
-  const lines = recent.map((item) => `${item.speaker}: ${item.text}`).join("\n");
-  logEl.textContent = lines;
+  const lines = recent
+    .map(
+      (item) =>
+        `<div class="turn"><strong>${escapeHtml(item.speaker)}:</strong> ${escapeHtml(
+          item.text
+        )}</div>`
+    )
+    .join("");
+  logEl.innerHTML = lines;
 }
 
 function finalizeSantaTranscript() {
@@ -566,10 +573,28 @@ function finalizeSantaTranscript() {
   }
   pushTranscript([{ speaker: "Santa", text }]);
   state.transcriptHistory.santa.push(text);
-  state.transcriptLog.push({ speaker: "Santa", text });
+  addLogEntry("Santa", text);
   state.pendingSantaTranscript = "";
   updateSummary();
   updateTranscriptLog();
+}
+
+function addLogEntry(speaker, text) {
+  if (!text) return;
+  const normalized = text.trim();
+  if (!normalized) return;
+  const last = state.transcriptLog[state.transcriptLog.length - 1];
+  if (last && last.speaker === speaker && last.text.trim() === normalized) return;
+  state.transcriptLog.push({ speaker, text: normalized });
+}
+
+function escapeHtml(str = "") {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
 function resetIdleTimer() {
