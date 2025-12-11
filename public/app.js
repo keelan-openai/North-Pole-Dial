@@ -196,6 +196,10 @@ async function startCall() {
     state.transcriptId = data.transcriptId;
     state.model = data.model;
     state.childName = data.profileName || "Kiddo";
+    state.transcriptHistory = { user: [], santa: [] };
+    state.transcriptLog = [];
+    updateSummary();
+    updateTranscriptLog();
 
     await openRealtimeConnection(clientSecret, data.model);
     state.connected = true;
@@ -626,3 +630,4 @@ function waitForIceGatheringComplete(pc) {
 updateButtons({ connected: false, connecting: false });
 restoreProfile();
 hydrateChildren(state.childProfile.children || []);
+updateTranscriptLog();
