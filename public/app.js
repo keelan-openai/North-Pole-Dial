@@ -202,6 +202,7 @@ async function startCall() {
     setConnection("Live");
     if (callAction) callAction.textContent = "Santa is on";
     updateButtons({ connected: true });
+    resetIdleTimer();
   } catch (error) {
     console.error(error);
     setStatus("Could not connect to Santa");
@@ -500,7 +501,7 @@ function resetIdleTimer() {
     clearTimeout(state.idleTimer);
   }
   if (!state.connected || !state.dc || state.dc.readyState !== "open") return;
-  state.idleTimer = setTimeout(() => {
+    state.idleTimer = setTimeout(() => {
     promptIdle();
   }, IDLE_PROMPT_MS);
 }
@@ -517,6 +518,7 @@ function promptIdle() {
     },
   };
   state.dc.send(JSON.stringify(payload));
+  resetIdleTimer();
 }
 function normalizeFragment(delta) {
   if (!delta) return "";
