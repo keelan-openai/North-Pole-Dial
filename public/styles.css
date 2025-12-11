@@ -119,6 +119,108 @@ body {
   color: rgba(255, 255, 255, 0.9);
 }
 
+.logo-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.phone-logo {
+  position: relative;
+  width: 72px;
+  height: 72px;
+}
+
+.phone-body {
+  position: absolute;
+  inset: 8px;
+  background: linear-gradient(135deg, #b3122f, #e73d59);
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
+}
+
+.phone-speaker {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  width: 28px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 3px;
+  transform: translateX(-50%);
+}
+
+.phone-dial {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  width: 30px;
+  height: 30px;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.6));
+  border-radius: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.phone-bell {
+  position: absolute;
+  top: -4px;
+  width: 18px;
+  height: 18px;
+  background: #f6d67a;
+  border-radius: 50%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+}
+
+.phone-bell.left {
+  left: 8px;
+}
+
+.phone-bell.right {
+  right: 8px;
+}
+
+.santa-hat {
+  position: absolute;
+  top: -12px;
+  left: -6px;
+  width: 84px;
+  height: 42px;
+}
+
+.hat-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 84px;
+  height: 34px;
+  background: linear-gradient(135deg, #b3122f, #e73d59);
+  border-radius: 20px;
+  transform: rotate(-6deg);
+}
+
+.hat-brim {
+  position: absolute;
+  bottom: 2px;
+  left: -2px;
+  width: 88px;
+  height: 16px;
+  background: #fff4e5;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.pom {
+  position: absolute;
+  top: -6px;
+  right: 4px;
+  width: 14px;
+  height: 14px;
+  background: #fff4e5;
+  border-radius: 50%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
 .stack {
   margin-top: 26px;
   display: flex;
@@ -527,6 +629,93 @@ button {
     radial-gradient(circle at 30% 70%, rgba(255, 255, 255, 0.22), transparent 60%);
   transform: rotate(-12deg);
   filter: blur(1px);
+}
+
+.reindeer {
+  position: absolute;
+  right: -70px;
+  bottom: 50px;
+  width: 70px;
+  height: 50px;
+  transform: scale(0.9);
+  filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.1));
+}
+
+.reindeer.mid {
+  right: -110px;
+  bottom: 60px;
+  opacity: 0.8;
+  transform: scale(0.8);
+}
+
+.reindeer .body {
+  position: absolute;
+  bottom: 10px;
+  left: 12px;
+  width: 44px;
+  height: 18px;
+  background: #c86b42;
+  border-radius: 12px;
+}
+
+.reindeer .neck {
+  position: absolute;
+  bottom: 24px;
+  left: 42px;
+  width: 10px;
+  height: 16px;
+  background: #c86b42;
+  transform: rotate(12deg);
+  border-radius: 8px;
+}
+
+.reindeer .head {
+  position: absolute;
+  bottom: 34px;
+  left: 48px;
+  width: 14px;
+  height: 12px;
+  background: #c86b42;
+  border-radius: 8px;
+}
+
+.reindeer .antlers {
+  position: absolute;
+  bottom: 46px;
+  left: 50px;
+  width: 16px;
+  height: 14px;
+  border-left: 3px solid #8b5233;
+  border-top: 3px solid #8b5233;
+  transform: rotate(-10deg);
+}
+
+.reindeer .leg {
+  position: absolute;
+  bottom: 0;
+  width: 8px;
+  height: 14px;
+  background: #a65530;
+  border-radius: 4px;
+}
+
+.reindeer .leg.front {
+  left: 38px;
+}
+
+.reindeer .leg.back {
+  left: 18px;
+}
+
+.reindeer .tail {
+  position: absolute;
+  bottom: 22px;
+  left: 8px;
+  width: 8px;
+  height: 8px;
+  background: #a65530;
+  border-radius: 6px;
+  transform: rotate(-20deg);
 }
 
 @media (max-width: 900px) {
