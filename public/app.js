@@ -11,16 +11,19 @@ const audioEl = document.getElementById("santa-audio");
 
 // Shared voice selection for the session and greeting (must match supported list)
 const VOICE = "cedar";
+const TURN_REFRESH_INTERVAL = 4; // resend persona prompt every N turns
 
 const state = {
   childName: "Kiddo",
   childProfile: {},
   transcriptId: null,
   instructions: "",
+  personaPrompt: "",
   connecting: false,
   connected: false,
   pendingUserTranscript: "",
   pendingSantaTranscript: "",
+  completedTurns: 0,
   pc: null,
   dc: null,
   micStream: null,
@@ -157,6 +160,7 @@ async function startCall() {
     }
 
     state.instructions = data.instructions;
+    state.personaPrompt = data.instructions || "";
     state.transcriptId = data.transcriptId;
     state.model = data.model;
     state.childName = data.profileName || "Kiddo";
@@ -254,7 +258,7 @@ function sendSessionConfig() {
   const payload = {
     type: "session.update",
     session: {
-      instructions: state.instructions,
+      instructions: state.personaPrompt || state.instructions,
       voice: VOICE,
       input_audio_format: "pcm16",
       output_audio_format: "pcm16",
@@ -298,6 +302,7 @@ function handleRealtimeEvent(message) {
           payload.transcript || payload.text || state.pendingUserTranscript;
         if (line) {
           pushTranscript([{ speaker: state.childName || "Child", text: line }]);
+          sendStyleNudge();
         }
         state.pendingUserTranscript = "";
         setStatus("Santa is thinking");
@@ -313,6 +318,10 @@ function handleRealtimeEvent(message) {
           pushTranscript([{ speaker: "Santa", text: state.pendingSantaTranscript }]);
         }
         state.pendingSantaTranscript = "";
+        state.completedTurns += 1;
+        if (state.completedTurns % TURN_REFRESH_INTERVAL === 0) {
+          sendSessionConfig();
+        }
         setStatus("Listening");
         break;
       }
@@ -329,6 +338,16 @@ function handleRealtimeEvent(message) {
   }
 }
 
+function sendStyleNudge() {
+  if (!state.dc || state.dc.readyState !== "open") return;
+  const payload = {
+    type: "response.create",
+    response: {
+      instructions: "Stay in character and keep the accent.",
+    },
+  };
+  state.dc.send(JSON.stringify(payload));
+}
 function normalizeFragment(delta) {
   if (!delta) return "";
   return typeof delta === "string" ? delta : "";
