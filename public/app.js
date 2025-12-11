@@ -32,6 +32,7 @@ const state = {
     user: [],
     santa: [],
   },
+  transcriptLog: [],
   idleTimer: null,
   pc: null,
   dc: null,
@@ -338,7 +339,9 @@ function handleRealtimeEvent(message) {
           pushTranscript([{ speaker: state.childName || "Child", text: line }]);
           sendStyleNudge();
           state.transcriptHistory.user.push(line);
+          state.transcriptLog.push({ speaker: state.childName || "Child", text: line });
           updateSummary();
+          updateTranscriptLog();
         }
         state.pendingUserTranscript = "";
         setStatus("Santa is thinking");
@@ -355,7 +358,9 @@ function handleRealtimeEvent(message) {
         if (state.pendingSantaTranscript) {
           pushTranscript([{ speaker: "Santa", text: state.pendingSantaTranscript }]);
           state.transcriptHistory.santa.push(state.pendingSantaTranscript);
+          state.transcriptLog.push({ speaker: "Santa", text: state.pendingSantaTranscript });
           updateSummary();
+          updateTranscriptLog();
         }
         state.pendingSantaTranscript = "";
         state.completedTurns += 1;
@@ -496,12 +501,23 @@ function updateSummary() {
   summaryEl.textContent = summary;
 }
 
+function updateTranscriptLog() {
+  const logEl = document.getElementById("transcript-log");
+  if (!logEl) return;
+  if (!state.transcriptLog.length) {
+    logEl.textContent = "No conversation yet.";
+    return;
+  }
+  const recent = state.transcriptLog.slice(-12);
+  logEl.textContent = recent.map((item) => `${item.speaker}: ${item.text}`).join("\n");
+}
+
 function resetIdleTimer() {
   if (state.idleTimer) {
     clearTimeout(state.idleTimer);
   }
   if (!state.connected || !state.dc || state.dc.readyState !== "open") return;
-    state.idleTimer = setTimeout(() => {
+  state.idleTimer = setTimeout(() => {
     promptIdle();
   }, IDLE_PROMPT_MS);
 }
@@ -545,12 +561,14 @@ function endCall(reason = "") {
     const text = state.pendingUserTranscript;
     flush.push({ speaker: state.childName || "Child", text });
     state.transcriptHistory.user.push(text);
+    state.transcriptLog.push({ speaker: state.childName || "Child", text });
     state.pendingUserTranscript = "";
   }
   if (state.pendingSantaTranscript) {
     const text = state.pendingSantaTranscript;
     flush.push({ speaker: "Santa", text });
     state.transcriptHistory.santa.push(text);
+    state.transcriptLog.push({ speaker: "Santa", text });
     state.pendingSantaTranscript = "";
   }
   if (flush.length) {
@@ -563,6 +581,7 @@ function endCall(reason = "") {
   if (callAction) callAction.textContent = "Start Call";
   updateButtons({ connected: false });
   updateSummary();
+  updateTranscriptLog();
 }
 
 function cleanupConnection() {

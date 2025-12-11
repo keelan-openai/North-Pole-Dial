@@ -289,6 +289,16 @@ body {
   line-height: 1.5;
 }
 
+.transcript-log {
+  margin-top: 6px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(15, 31, 45, 0.15);
+  border-radius: 10px;
+  min-height: 44px;
+  white-space: pre-wrap;
+}
+
 .info-text {
   margin: 6px 0;
   line-height: 1.6;
