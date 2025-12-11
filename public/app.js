@@ -9,11 +9,13 @@ const profileBody = document.getElementById("profile-body");
 const clearProfileBtn = document.getElementById("clear-profile");
 const childListEl = document.getElementById("child-list");
 const addChildBtn = document.getElementById("add-child");
+const summaryEl = document.getElementById("transcript-summary");
 const audioEl = document.getElementById("santa-audio");
 
 // Shared voice selection for the session and greeting (must match supported list)
 const VOICE = "cedar";
 const TURN_REFRESH_INTERVAL = 4; // resend persona prompt every N turns
+const IDLE_PROMPT_MS = 20000;
 
 const state = {
   childName: "Kiddo",
@@ -26,6 +28,11 @@ const state = {
   pendingUserTranscript: "",
   pendingSantaTranscript: "",
   completedTurns: 0,
+  transcriptHistory: {
+    user: [],
+    santa: [],
+  },
+  idleTimer: null,
   pc: null,
   dc: null,
   micStream: null,
@@ -269,6 +276,7 @@ function wireDataChannel(channel) {
     setStatus("Connected — Santa can hear you");
     sendSessionConfig();
     sendWarmGreeting();
+    resetIdleTimer();
   });
 
   channel.addEventListener("message", (event) => {
@@ -319,6 +327,7 @@ function handleRealtimeEvent(message) {
       case "input_audio_buffer.transcription.delta": {
         state.pendingUserTranscript += normalizeFragment(payload.delta || payload.text);
         setStatus("Listening");
+        resetIdleTimer();
         break;
       }
       case "input_audio_buffer.transcription.completed": {
@@ -327,19 +336,25 @@ function handleRealtimeEvent(message) {
         if (line) {
           pushTranscript([{ speaker: state.childName || "Child", text: line }]);
           sendStyleNudge();
+          state.transcriptHistory.user.push(line);
+          updateSummary();
         }
         state.pendingUserTranscript = "";
         setStatus("Santa is thinking");
+        resetIdleTimer();
         break;
       }
       case "response.output_text.delta": {
         state.pendingSantaTranscript += normalizeFragment(payload.delta || "");
         setStatus("Santa is speaking");
+        resetIdleTimer();
         break;
       }
       case "response.completed": {
         if (state.pendingSantaTranscript) {
           pushTranscript([{ speaker: "Santa", text: state.pendingSantaTranscript }]);
+          state.transcriptHistory.santa.push(state.pendingSantaTranscript);
+          updateSummary();
         }
         state.pendingSantaTranscript = "";
         state.completedTurns += 1;
@@ -347,6 +362,7 @@ function handleRealtimeEvent(message) {
           sendSessionConfig();
         }
         setStatus("Listening");
+        resetIdleTimer();
         break;
       }
       case "response.error": {
@@ -460,6 +476,48 @@ function readChildren() {
     })
     .filter(Boolean);
 }
+
+function updateSummary() {
+  if (!summaryEl) return;
+  const topics = [...state.transcriptHistory.user, ...state.transcriptHistory.santa];
+  if (!topics.length) {
+    summaryEl.textContent = "No call yet. A short summary will appear here after you chat.";
+    return;
+  }
+  const lastFew = topics.slice(-6).join(" ");
+  const wishlist = topics
+    .filter((t) => /wish|want|would like|list|gift/i.test(t))
+    .slice(-3);
+  let summary = `Conversation notes: ${lastFew.slice(0, 240)}${lastFew.length > 240 ? "..." : ""}`;
+  if (wishlist.length) {
+    summary += ` | Wishlist mentions: ${wishlist.join(" / ")}`;
+  }
+  summaryEl.textContent = summary;
+}
+
+function resetIdleTimer() {
+  if (state.idleTimer) {
+    clearTimeout(state.idleTimer);
+  }
+  if (!state.connected || !state.dc || state.dc.readyState !== "open") return;
+  state.idleTimer = setTimeout(() => {
+    promptIdle();
+  }, IDLE_PROMPT_MS);
+}
+
+function promptIdle() {
+  if (!state.dc || state.dc.readyState !== "open") return;
+  const payload = {
+    type: "response.create",
+    response: {
+      modalities: ["text", "audio"],
+      voice: VOICE,
+      input_text:
+        "I haven't heard you for a bit. Would you like a quick fun story or a silly Santa joke?",
+    },
+  };
+  state.dc.send(JSON.stringify(payload));
+}
 function normalizeFragment(delta) {
   if (!delta) return "";
   return typeof delta === "string" ? delta : "";
@@ -486,9 +544,14 @@ function endCall(reason = "") {
   setConnection("Disconnected");
   if (callAction) callAction.textContent = "Start Call";
   updateButtons({ connected: false });
+  updateSummary();
 }
 
 function cleanupConnection() {
+  if (state.idleTimer) {
+    clearTimeout(state.idleTimer);
+    state.idleTimer = null;
+  }
   if (state.dc) {
     try {
       state.dc.close();
