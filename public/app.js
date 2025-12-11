@@ -562,12 +562,12 @@ function updateTranscriptLog() {
   }
   const recent = temp.slice(-12);
   const lines = recent
-    .map(
-      (item) =>
-        `<div class="turn"><strong>${escapeHtml(item.speaker)}:</strong> ${escapeHtml(
-          item.text
-        )}</div>`
-    )
+    .map((item) => {
+      const label = formatSpeaker(item.speaker);
+      return `<div class="turn"><span class="speaker">${escapeHtml(label)}:</span> ${escapeHtml(
+        item.text
+      )}</div>`;
+    })
     .join("");
   logEl.innerHTML = lines;
 }
@@ -604,6 +604,12 @@ function escapeHtml(str = "") {
     .replace(/'/g, "&#039;");
 }
 
+function formatSpeaker(speaker = "") {
+  if (!speaker) return "";
+  if (speaker.toLowerCase() === "santa") return "SANTA";
+  return speaker;
+}
+
 async function summarizeConversation() {
   if (!state.transcriptLog.length) return;
   setSummary("Summarizing your call...");
@@ -620,6 +626,7 @@ async function summarizeConversation() {
     const data = await response.json();
     if (data.summary) {
       state.modelSummary = data.summary.trim();
+      console.log("Call summary:", state.modelSummary);
       updateSummary();
       return;
     }

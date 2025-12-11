@@ -311,6 +311,13 @@ body {
   margin-bottom: 0;
 }
 
+.speaker {
+  font-weight: 800;
+  color: #0f1f2d;
+  display: inline-block;
+  margin-right: 6px;
+}
+
 .info-text {
   margin: 6px 0;
   line-height: 1.6;
