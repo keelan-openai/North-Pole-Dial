@@ -285,6 +285,7 @@ function wireDataChannel(channel) {
   channel.addEventListener("open", () => {
     setStatus("Connected — Santa can hear you");
     sendSessionConfig();
+    // Kick off a warm greeting immediately so Santa speaks first.
     sendWarmGreeting();
     resetIdleTimer();
   });
