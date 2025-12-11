@@ -16,7 +16,7 @@ const audioEl = document.getElementById("santa-audio");
 const VOICE = "cedar";
 const TURN_REFRESH_INTERVAL = 4; // resend persona prompt every N turns
 const IDLE_PROMPT_MS = 20000;
-const DEBUG_TRANSCRIPT = true;
+const DEBUG_TRANSCRIPT = false;
 
 const state = {
   childName: "Kiddo",
@@ -358,26 +358,6 @@ function handleRealtimeEvent(message) {
         resetIdleTimer();
         break;
       }
-      case "response.output_text.delta": {
-        state.pendingSantaTranscript += normalizeFragment(payload.delta || "");
-        setStatus("Santa is speaking");
-        resetIdleTimer();
-        break;
-      }
-      case "response.output_text.done": {
-        const text =
-          payload.output_text?.content ||
-          payload.output_text?.text ||
-          state.pendingSantaTranscript;
-        if (text) {
-          state.transcriptHistory.santa.push(text);
-          state.transcriptLog.push({ speaker: "Santa", text });
-          updateSummary();
-        }
-        state.pendingSantaTranscript = "";
-        updateTranscriptLog();
-        break;
-      }
       case "response.completed": {
         if (state.pendingSantaTranscript) {
           pushTranscript([{ speaker: "Santa", text: state.pendingSantaTranscript }]);
@@ -401,18 +381,6 @@ function handleRealtimeEvent(message) {
         break;
       }
       default:
-        // Capture any text-bearing payloads for visibility
-        const text =
-          payload?.output_text?.delta ||
-          payload?.output_text?.content ||
-          payload?.output_audio_transcription?.text ||
-          payload?.input_audio_transcription?.text ||
-          payload?.transcript ||
-          payload?.text ||
-          payload?.delta;
-        if (typeof text === "string" && text.trim()) {
-          state.transcriptLog.push({ speaker: payload?.role || "Event", text });
-        }
         updateTranscriptLog();
         break;
     }
@@ -528,7 +496,7 @@ function updateSummary() {
     summaryEl.textContent = "No call yet. A short summary will appear here after you chat.";
     return;
   }
-  const lastFew = topics.slice(-6).join(" ");
+  const lastFew = topics.slice(-10).join(" ");
   const wishlist = topics
     .filter((t) => /wish|want|would like|list|gift/i.test(t))
     .slice(-3);
@@ -554,7 +522,8 @@ function updateTranscriptLog() {
     temp.push({ speaker: "Santa", text: state.pendingSantaTranscript });
   }
   const recent = temp.slice(-12);
-  logEl.textContent = recent.map((item) => `${item.speaker}: ${item.text}`).join("\n");
+  const lines = recent.map((item) => `${item.speaker}: ${item.text}`).join("\n");
+  logEl.textContent = lines;
 }
 
 function resetIdleTimer() {
