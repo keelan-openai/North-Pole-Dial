@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Santa Hotline</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="sky">
+      <div class="snow"></div>
+      <div class="snow slow"></div>
+      <div class="glow"></div>
+    </div>
+    <main class="app">
+      <header class="hero">
+        <div class="badge">North Pole Live</div>
+        <div class="hero-text">
+          <h1>Call Santa Claus</h1>
+          <p>
+            A cozy, festive phone call powered by the OpenAI Realtime API. Santa is briefed from a private text file on your machine—nothing about your kiddo is shown on screen.
+          </p>
+        </div>
+        <div class="hero-actions">
+          <button class="cta" id="call-toggle">Start the Call</button>
+          <div class="status" data-status>Idle • ready for magic</div>
+        </div>
+      </header>
+
+      <section class="grid">
+        <article class="panel info" aria-label="Santa briefing info">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Child profile</p>
+              <h2>Santa's notes</h2>
+            </div>
+            <button class="ghost small" id="profile-toggle" type="button">Show form</button>
+          </div>
+          <div class="collapsible" id="profile-body" hidden>
+            <form id="child-form" class="form">
+              <div class="two-up">
+                <label class="field">
+                  <span>Name</span>
+                  <input type="text" name="name" placeholder="Ava" />
+                </label>
+                <label class="field">
+                  <span>Age</span>
+                  <input type="number" name="age" min="1" max="16" placeholder="7" />
+                </label>
+              </div>
+              <div class="two-up">
+                <label class="field">
+                  <span>Pronouns</span>
+                  <input type="text" name="pronouns" placeholder="she/her" />
+                </label>
+                <label class="field">
+                  <span>Favorites</span>
+                  <input
+                    type="text"
+                    name="favorites"
+                    placeholder="penguins, glitter slime, baking cookies"
+                  />
+                </label>
+              </div>
+              <label class="field">
+                <span>Wishlist highlights</span>
+                <input
+                  type="text"
+                  name="wishlist"
+                  placeholder="sparkly bike, illustrated storybooks"
+                />
+              </label>
+              <label class="field">
+                <span>Recent wins</span>
+                <textarea
+                  name="wins"
+                  rows="2"
+                  placeholder="Learned to tie her shoes, shared toys with her cousins"
+                ></textarea>
+              </label>
+              <label class="field">
+                <span>Parent notes &amp; boundaries</span>
+                <textarea
+                  name="notes"
+                  rows="2"
+                  placeholder="Keep it cozy, remind bedtime is soon, avoid talking about surprises for mom"
+                ></textarea>
+              </label>
+              <button type="submit" class="ghost">Save profile</button>
+            </form>
+            <p class="tiny-note">Saved privately to your machine for Santa to read. Restart the call after updates.</p>
+          </div>
+        </article>
+
+        <article class="panel call-panel" aria-label="Call Santa">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Live line</p>
+              <h2>Santa hotline</h2>
+            </div>
+            <span class="tiny-note" id="connection-state">Not connected</span>
+          </div>
+          <div class="call-shell">
+            <div class="call-screen">
+              <div class="halo"></div>
+              <div class="santa-avatar" aria-hidden="true">
+                <div class="hat"></div>
+                <div class="face">
+                  <div class="eyes"></div>
+                  <div class="beard"></div>
+                </div>
+              </div>
+              <div class="call-meta">
+                <p class="call-label">Calling...</p>
+                <p class="call-name">Santa Claus</p>
+                <p class="call-status" data-call-status>Ready</p>
+              </div>
+              <div class="lights">
+                <span></span><span></span><span></span><span></span><span></span>
+              </div>
+              <div class="call-controls">
+                <button class="cta" id="call-action">Start Call</button>
+                <button class="danger" id="hangup" aria-label="Hang up" disabled>Hang Up</button>
+              </div>
+              <p class="privacy">Audio is live. Transcript saved privately to a text file.</p>
+            </div>
+          </div>
+          <audio id="santa-audio" autoplay playsinline></audio>
+        </article>
+      </section>
+    </main>
+    <script src="app.js" defer></script>
+  </body>
+</html>
