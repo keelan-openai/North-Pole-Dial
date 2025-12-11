@@ -306,7 +306,7 @@ function sendSessionConfig() {
 function sendWarmGreeting() {
   if (!state.dc || state.dc.readyState !== "open") return;
   const names = buildChildNamesList();
-  const greeting = `Ho ho ho! ${names}, it's Santa calling from the North Pole. I can hear you loud and clear. Tell me your name so I can be sure—then let's talk about what you'd love for Christmas.`;
+  const greeting = `Hello, this is Santa! Ho ho ho, ${names}! I can hear you loud and clear from the North Pole. Let's dive into what you'd love for Christmas.`;
   state.dc.send(
     JSON.stringify({
       type: "response.create",
