@@ -330,6 +330,7 @@ function handleRealtimeEvent(message) {
     const { type } = payload;
 
     switch (type) {
+      case "input_audio_buffer.transcript.delta": // alt spelling
       case "input_audio_buffer.transcription.delta": {
         state.pendingUserTranscript += normalizeFragment(payload.delta || payload.text);
         setStatus("Listening");
@@ -337,6 +338,7 @@ function handleRealtimeEvent(message) {
         updateTranscriptLog();
         break;
       }
+      case "input_audio_buffer.transcript.completed": // alt spelling
       case "input_audio_buffer.transcription.completed": {
         const line =
           payload.transcript || payload.text || state.pendingUserTranscript;
@@ -383,6 +385,8 @@ function handleRealtimeEvent(message) {
         break;
       }
       default:
+        // Update log with any pending partials so UI isn't blank
+        updateTranscriptLog();
         break;
     }
     updateTranscriptLog();
