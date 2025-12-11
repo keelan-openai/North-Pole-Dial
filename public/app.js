@@ -16,7 +16,7 @@ const audioEl = document.getElementById("santa-audio");
 const VOICE = "cedar";
 const TURN_REFRESH_INTERVAL = 4; // resend persona prompt every N turns
 const IDLE_PROMPT_MS = 20000;
-const DEBUG_TRANSCRIPT = true;
+const DEBUG_TRANSCRIPT = false;
 
 const state = {
   childName: "Kiddo",
@@ -339,7 +339,6 @@ function handleRealtimeEvent(message) {
         state.pendingUserTranscript += normalizeFragment(payload.delta || payload.text);
         setStatus("Listening");
         resetIdleTimer();
-        updateTranscriptLog();
         break;
       }
       case "input_audio_buffer.transcript.completed": // alt spelling
@@ -363,7 +362,6 @@ function handleRealtimeEvent(message) {
         state.pendingSantaTranscript += normalizeFragment(payload.delta || "");
         setStatus("Santa is speaking");
         resetIdleTimer();
-        updateTranscriptLog();
         break;
       }
       case "response.completed": {
@@ -389,11 +387,6 @@ function handleRealtimeEvent(message) {
         break;
       }
       default:
-        // Log any text-bearing events to the transcript log for visibility
-        const text = payload?.text || payload?.delta || payload?.transcript;
-        if (typeof text === "string" && text.trim()) {
-          state.transcriptLog.push({ speaker: payload?.role || "Event", text });
-        }
         updateTranscriptLog();
         break;
     }
