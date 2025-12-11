@@ -9,7 +9,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const MODEL =
   process.env.MODEL || "gpt-4o-realtime-preview-2024-12-17";
-const SUMMARY_MODEL = process.env.SUMMARY_MODEL || "gpt-4o-mini";
+// Default summary model can be overridden via SUMMARY_MODEL env
+const SUMMARY_MODEL = process.env.SUMMARY_MODEL || "gpt-5-nano";
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const VOICE = process.env.SANTA_VOICE || "cedar";
 const DEFAULT_TRANSCRIPT_DIR = process.env.VERCEL

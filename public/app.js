@@ -17,7 +17,7 @@ const VOICE = "cedar";
 const TURN_REFRESH_INTERVAL = 4; // resend persona prompt every N turns
 const IDLE_PROMPT_MS = 20000;
 const DEBUG_TRANSCRIPT = false;
-const SUMMARY_MODEL = "gpt-4o-mini";
+const SUMMARY_MODEL = "gpt-5-nano"; // overridable via server SUMMARY_MODEL env
 
 const state = {
   childName: "Kiddo",
