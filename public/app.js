@@ -511,20 +511,32 @@ function readChildren() {
 
 function updateSummary() {
   if (!summaryEl) return;
-  const topics = [...state.transcriptHistory.user, ...state.transcriptHistory.santa];
-  if (!topics.length) {
+  const kidLines = state.transcriptHistory.user || [];
+  const santaLines = state.transcriptHistory.santa || [];
+  if (!kidLines.length && !santaLines.length) {
     summaryEl.textContent = "No call yet. A short summary will appear here after you chat.";
     return;
   }
-  const lastFew = topics.slice(-10).join(" ");
-  const wishlist = topics
-    .filter((t) => /wish|want|would like|list|gift/i.test(t))
+
+  const recentKid = kidLines.slice(-5).join(" ").trim();
+  const wishlist = kidLines
+    .filter((t) => /wish|want|would like|list|gift|ask/i.test(t))
     .slice(-3);
-  let summary = `Conversation notes: ${lastFew.slice(0, 240)}${lastFew.length > 240 ? "..." : ""}`;
+
+  let summary = recentKid
+    ? `Kids said: ${recentKid.slice(0, 220)}${recentKid.length > 220 ? "..." : ""}`
+    : "";
+
   if (wishlist.length) {
-    summary += ` | Wishlist mentions: ${wishlist.join(" / ")}`;
+    summary += `${summary ? " | " : ""}Wishlist: ${wishlist.join(" / ")}`;
   }
-  summaryEl.textContent = summary;
+
+  if (!summary && santaLines.length) {
+    const recentSanta = santaLines.slice(-2).join(" ");
+    summary = `Santa response highlights: ${recentSanta.slice(0, 220)}${recentSanta.length > 220 ? "..." : ""}`;
+  }
+
+  summaryEl.textContent = summary || "Summary pending...";
 }
 
 function updateTranscriptLog() {
