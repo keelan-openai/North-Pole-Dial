@@ -1,4 +1,3 @@
-const callToggle = document.getElementById("call-toggle");
 const callAction = document.getElementById("call-action");
 const hangupBtn = document.getElementById("hangup");
 const statusEl = document.querySelector("[data-status]");
@@ -87,7 +86,6 @@ function restoreProfile() {
 
 function updateButtons({ connecting = false, connected = false } = {}) {
   callAction.disabled = connecting || connected;
-  callToggle.disabled = connecting || connected;
   hangupBtn.disabled = !connected;
 }
 
@@ -115,7 +113,6 @@ if (formEl) {
   });
 }
 
-callToggle.addEventListener("click", () => startCall());
 callAction.addEventListener("click", () => startCall());
 hangupBtn.addEventListener("click", () => endCall("Call ended"));
 

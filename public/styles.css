@@ -438,6 +438,31 @@ button {
   box-shadow: 0 6px 0 0 #f7d7be;
 }
 
+.santa-avatar .face::before {
+  content: "";
+  position: absolute;
+  top: 28px;
+  left: 50%;
+  width: 14px;
+  height: 10px;
+  background: #e6a177;
+  border-radius: 50%;
+  transform: translateX(-50%);
+}
+
+.santa-avatar .face::after {
+  content: "";
+  position: absolute;
+  top: 36px;
+  left: 50%;
+  width: 40px;
+  height: 10px;
+  background: #fff4e5;
+  border-radius: 10px;
+  transform: translateX(-50%);
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.08);
+}
+
 .santa-avatar .beard {
   position: absolute;
   bottom: -8px;
