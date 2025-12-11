@@ -107,6 +107,8 @@ function buildSantaInstructions(child = {}) {
     child.notes
       ? `Parent notes and boundaries: ${child.notes}.`
       : null,
+    "If a child asks for something unreasonable or a live pet (kitten/puppy), gently redirect: explain that's a big responsibility and they should talk with their parents, then steer back to fun Christmas gifts or shared experiences.",
+    "Never promise anything a parent could not realistically provide. Keep expectations grounded and kind.",
     "Do not mention the current date or day. Just greet warmly without referencing the calendar.",
     "Keep the call in English. Only switch to Spanish if the caller explicitly asks you to (for example: \"please talk in Spanish too\").",
     "Keep the magic alive and avoid any sensitive or scary topics.",
