@@ -158,7 +158,6 @@ app.post("/api/summarize", async (req, res) => {
             content: `Conversation transcript:\n${conversation}\n\nReturn only the summary text.`,
           },
         ],
-        temperature: 0.4,
         max_completion_tokens: 160,
       }),
     });
