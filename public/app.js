@@ -16,7 +16,7 @@ const audioEl = document.getElementById("santa-audio");
 const VOICE = "cedar";
 const TURN_REFRESH_INTERVAL = 4; // resend persona prompt every N turns
 const IDLE_PROMPT_MS = 20000;
-const DEBUG_TRANSCRIPT = false;
+const DEBUG_TRANSCRIPT = true;
 
 const state = {
   childName: "Kiddo",
@@ -364,6 +364,20 @@ function handleRealtimeEvent(message) {
         resetIdleTimer();
         break;
       }
+      case "response.output_text.done": {
+        const text =
+          payload.output_text?.content ||
+          payload.output_text?.text ||
+          state.pendingSantaTranscript;
+        if (text) {
+          state.transcriptHistory.santa.push(text);
+          state.transcriptLog.push({ speaker: "Santa", text });
+          updateSummary();
+        }
+        state.pendingSantaTranscript = "";
+        updateTranscriptLog();
+        break;
+      }
       case "response.completed": {
         if (state.pendingSantaTranscript) {
           pushTranscript([{ speaker: "Santa", text: state.pendingSantaTranscript }]);
@@ -387,6 +401,18 @@ function handleRealtimeEvent(message) {
         break;
       }
       default:
+        // Capture any text-bearing payloads for visibility
+        const text =
+          payload?.output_text?.delta ||
+          payload?.output_text?.content ||
+          payload?.output_audio_transcription?.text ||
+          payload?.input_audio_transcription?.text ||
+          payload?.transcript ||
+          payload?.text ||
+          payload?.delta;
+        if (typeof text === "string" && text.trim()) {
+          state.transcriptLog.push({ speaker: payload?.role || "Event", text });
+        }
         updateTranscriptLog();
         break;
     }
