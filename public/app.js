@@ -418,7 +418,8 @@ function sendStyleNudge() {
   const payload = {
     type: "response.create",
     response: {
-      instructions: "Stay in character and keep the accent.",
+      instructions:
+        "Stay in character and keep the old, gravelly Santa accent and deep grandfatherly voice.",
     },
   };
   state.dc.send(JSON.stringify(payload));
