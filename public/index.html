@@ -132,6 +132,15 @@
                   <input type="number" name="age" min="1" max="16" placeholder="7" />
                 </label>
               </div>
+              <div class="child-list" id="child-list">
+                <p class="eyebrow">Other children (optional)</p>
+                <div class="child-row" data-child-row>
+                  <input type="text" name="child-name" placeholder="Sibling name" />
+                  <input type="number" name="child-age" min="0" max="18" placeholder="Age" />
+                  <button type="button" class="ghost small remove-child" aria-label="Remove child">Remove</button>
+                </div>
+              </div>
+              <button type="button" class="ghost small" id="add-child">Add another child</button>
               <div class="two-up">
                 <label class="field">
                   <span>Pronouns</span>

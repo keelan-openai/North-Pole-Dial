@@ -314,6 +314,28 @@ body {
   color: rgba(15, 31, 45, 0.85);
 }
 
+.child-list {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.child-row {
+  display: grid;
+  grid-template-columns: 1fr 120px auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.child-row input {
+  height: 42px;
+}
+
+.remove-child {
+  padding: 8px 10px;
+}
+
 .field input,
 .field textarea {
   width: 100%;

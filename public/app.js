@@ -7,6 +7,8 @@ const formEl = document.getElementById("child-form");
 const profileToggle = document.getElementById("profile-toggle");
 const profileBody = document.getElementById("profile-body");
 const clearProfileBtn = document.getElementById("clear-profile");
+const childListEl = document.getElementById("child-list");
+const addChildBtn = document.getElementById("add-child");
 const audioEl = document.getElementById("santa-audio");
 
 // Shared voice selection for the session and greeting (must match supported list)
@@ -42,7 +44,7 @@ function setConnection(text) {
 function readChildProfileForm() {
   if (!formEl) return {};
   const formData = new FormData(formEl);
-  return {
+  const profile = {
     name: formData.get("name")?.trim() || "",
     age: formData.get("age")?.trim() || "",
     pronouns: formData.get("pronouns")?.trim() || "",
@@ -51,6 +53,8 @@ function readChildProfileForm() {
     wins: formData.get("wins")?.trim() || "",
     notes: formData.get("notes")?.trim() || "",
   };
+  profile.children = readChildren();
+  return profile;
 }
 
 function setChildProfileForm(profile = {}) {
@@ -62,6 +66,7 @@ function setChildProfileForm(profile = {}) {
   formEl.wishlist.value = profile.wishlist || "";
   formEl.wins.value = profile.wins || "";
   formEl.notes.value = profile.notes || "";
+  hydrateChildren(profile.children || []);
 }
 
 function persistProfile(profile) {
@@ -116,11 +121,18 @@ if (formEl) {
 
 if (clearProfileBtn) {
   clearProfileBtn.addEventListener("click", () => {
-    state.childProfile = {};
+    const empty = { children: [] };
+    state.childProfile = empty;
     state.childName = "Kiddo";
-    persistProfile({});
-    setChildProfileForm({});
+    persistProfile(empty);
+    setChildProfileForm(empty);
     setStatus("Profile cleared");
+  });
+}
+
+if (addChildBtn && childListEl) {
+  addChildBtn.addEventListener("click", () => {
+    addChildRow();
   });
 }
 
@@ -360,6 +372,71 @@ function sendStyleNudge() {
   };
   state.dc.send(JSON.stringify(payload));
 }
+
+function addChildRow(data = {}) {
+  if (!childListEl) return;
+  const row = document.createElement("div");
+  row.className = "child-row";
+  row.setAttribute("data-child-row", "true");
+
+  const nameInput = document.createElement("input");
+  nameInput.type = "text";
+  nameInput.name = "child-name";
+  nameInput.placeholder = "Sibling name";
+  nameInput.value = data.name || "";
+
+  const ageInput = document.createElement("input");
+  ageInput.type = "number";
+  ageInput.name = "child-age";
+  ageInput.min = "0";
+  ageInput.max = "18";
+  ageInput.placeholder = "Age";
+  ageInput.value = data.age || "";
+
+  const removeBtn = document.createElement("button");
+  removeBtn.type = "button";
+  removeBtn.className = "ghost small remove-child";
+  removeBtn.textContent = "Remove";
+  removeBtn.addEventListener("click", () => {
+    row.remove();
+  });
+
+  row.appendChild(nameInput);
+  row.appendChild(ageInput);
+  row.appendChild(removeBtn);
+  childListEl.appendChild(row);
+}
+
+function hydrateChildren(children = []) {
+  if (!childListEl) return;
+  const rows = Array.from(childListEl.querySelectorAll("[data-child-row]"));
+  rows.forEach((row, idx) => {
+    if (idx > 0) row.remove();
+  });
+  const firstRow = childListEl.querySelector("[data-child-row]");
+  if (firstRow) {
+    const nameInput = firstRow.querySelector('input[name="child-name"]');
+    const ageInput = firstRow.querySelector('input[name="child-age"]');
+    if (nameInput) nameInput.value = children[0]?.name || "";
+    if (ageInput) ageInput.value = children[0]?.age || "";
+  }
+  for (let i = 1; i < children.length; i++) {
+    addChildRow(children[i]);
+  }
+}
+
+function readChildren() {
+  if (!childListEl) return [];
+  const rows = Array.from(childListEl.querySelectorAll("[data-child-row]"));
+  return rows
+    .map((row) => {
+      const name = row.querySelector('input[name="child-name"]')?.value.trim() || "";
+      const age = row.querySelector('input[name="child-age"]')?.value.trim() || "";
+      if (!name && !age) return null;
+      return { name, age };
+    })
+    .filter(Boolean);
+}
 function normalizeFragment(delta) {
   if (!delta) return "";
   return typeof delta === "string" ? delta : "";
@@ -425,3 +502,4 @@ function waitForIceGatheringComplete(pc) {
 
 updateButtons({ connected: false, connecting: false });
 restoreProfile();
+hydrateChildren(state.childProfile.children || []);
