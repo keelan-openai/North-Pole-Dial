@@ -10,24 +10,69 @@
     <div class="sky">
       <div class="snow"></div>
       <div class="snow slow"></div>
-      <div class="glow"></div>
     </div>
     <main class="app">
       <header class="hero">
-        <div class="badge">North Pole Live</div>
-        <div class="hero-text">
+        <div class="hero-left">
+          <div class="badge">North Pole Live</div>
           <h1>NORTH POLE HOTLINE</h1>
           <p>
-            A cozy, festive phone call powered by the OpenAI Realtime API. Santa is briefed from a private text file on your machine—nothing about your kiddo is shown on screen.
+            Snowy, cozy, and straight from Santa’s sleigh. Press call to ring the North Pole and let the magic begin.
           </p>
+          <div class="hero-actions">
+            <button class="cta" id="call-toggle">Start the Call</button>
+            <div class="status" data-status>Idle • ready for magic</div>
+          </div>
         </div>
-        <div class="hero-actions">
-          <button class="cta" id="call-toggle">Start the Call</button>
-          <div class="status" data-status>Idle • ready for magic</div>
+        <div class="hero-right">
+          <div class="sleigh">
+            <div class="sleigh-body"></div>
+            <div class="sleigh-seat"></div>
+            <div class="reins"></div>
+            <div class="runner"></div>
+            <div class="runner back"></div>
+            <div class="startrail"></div>
+          </div>
         </div>
       </header>
 
-      <section class="grid">
+      <section class="stack">
+        <article class="panel call-panel" aria-label="Call Santa">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Live line</p>
+              <h2>Santa hotline</h2>
+            </div>
+            <span class="tiny-note" id="connection-state">Not connected</span>
+          </div>
+          <div class="call-shell">
+            <div class="call-screen">
+              <div class="halo"></div>
+              <div class="santa-avatar" aria-hidden="true">
+                <div class="hat"></div>
+                <div class="face">
+                  <div class="eyes"></div>
+                  <div class="beard"></div>
+                </div>
+              </div>
+              <div class="call-meta">
+                <p class="call-label">Calling...</p>
+                <p class="call-name">Santa Claus</p>
+                <p class="call-status" data-call-status>Ready</p>
+              </div>
+              <div class="lights">
+                <span></span><span></span><span></span><span></span><span></span>
+              </div>
+              <div class="call-controls">
+                <button class="cta" id="call-action">Start Call</button>
+                <button class="danger" id="hangup" aria-label="Hang up" disabled>Hang Up</button>
+              </div>
+              <p class="privacy">Audio is live. Transcript saved privately to a text file.</p>
+            </div>
+          </div>
+          <audio id="santa-audio" autoplay playsinline></audio>
+        </article>
+
         <article class="panel info" aria-label="Santa briefing info">
           <div class="panel-header">
             <div>
@@ -90,42 +135,6 @@
             </form>
             <p class="tiny-note">Saved privately to your machine for Santa to read. Restart the call after updates.</p>
           </div>
-        </article>
-
-        <article class="panel call-panel" aria-label="Call Santa">
-          <div class="panel-header">
-            <div>
-              <p class="eyebrow">Live line</p>
-              <h2>Santa hotline</h2>
-            </div>
-            <span class="tiny-note" id="connection-state">Not connected</span>
-          </div>
-          <div class="call-shell">
-            <div class="call-screen">
-              <div class="halo"></div>
-              <div class="santa-avatar" aria-hidden="true">
-                <div class="hat"></div>
-                <div class="face">
-                  <div class="eyes"></div>
-                  <div class="beard"></div>
-                </div>
-              </div>
-              <div class="call-meta">
-                <p class="call-label">Calling...</p>
-                <p class="call-name">Santa Claus</p>
-                <p class="call-status" data-call-status>Ready</p>
-              </div>
-              <div class="lights">
-                <span></span><span></span><span></span><span></span><span></span>
-              </div>
-              <div class="call-controls">
-                <button class="cta" id="call-action">Start Call</button>
-                <button class="danger" id="hangup" aria-label="Hang up" disabled>Hang Up</button>
-              </div>
-              <p class="privacy">Audio is live. Transcript saved privately to a text file.</p>
-            </div>
-          </div>
-          <audio id="santa-audio" autoplay playsinline></audio>
         </article>
       </section>
     </main>
