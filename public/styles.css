@@ -291,6 +291,18 @@ body {
   line-height: 1.5;
 }
 
+.summary-list {
+  margin: 6px 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.summary-list li {
+  line-height: 1.5;
+}
+
 .transcript-log {
   margin-top: 6px;
   padding: 8px 10px;

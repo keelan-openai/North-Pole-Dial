@@ -515,7 +515,7 @@ function readChildren() {
 function updateSummary() {
   if (!summaryEl) return;
   if (state.modelSummary) {
-    summaryEl.textContent = state.modelSummary;
+    renderSummaryList(state.modelSummary);
     return;
   }
   const kidLines = state.transcriptHistory.user || [];
@@ -543,7 +543,11 @@ function updateSummary() {
     summary = `Santa response highlights: ${recentSanta.slice(0, 220)}${recentSanta.length > 220 ? "..." : ""}`;
   }
 
-  summaryEl.textContent = summary || "Summary pending...";
+  if (summary) {
+    renderSummaryList(summary);
+  } else {
+    summaryEl.textContent = "Summary pending...";
+  }
 }
 
 function updateTranscriptLog() {
@@ -640,6 +644,26 @@ async function summarizeConversation() {
 function setSummary(text) {
   if (!summaryEl) return;
   summaryEl.textContent = text;
+}
+
+function renderSummaryList(text = "") {
+  if (!summaryEl) return;
+  const bullets = splitIntoBullets(text);
+  summaryEl.innerHTML = `<ul class="summary-list">${bullets
+    .map((item) => `<li>${escapeHtml(item)}</li>`)
+    .join("")}</ul>`;
+}
+
+function splitIntoBullets(text = "") {
+  if (!text) return [];
+  // Split on sentence boundaries or line breaks, trim empties
+  const parts = text
+    .split(/\n+|(?<=[.!?])\s+/)
+    .map((t) => t.trim())
+    .filter(Boolean);
+  // Avoid overly long bullets by merging very short fragments
+  if (parts.length > 1) return parts;
+  return [text.trim()];
 }
 
 function resetIdleTimer() {
