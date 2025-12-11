@@ -334,6 +334,7 @@ function handleRealtimeEvent(message) {
         state.pendingUserTranscript += normalizeFragment(payload.delta || payload.text);
         setStatus("Listening");
         resetIdleTimer();
+        updateTranscriptLog();
         break;
       }
       case "input_audio_buffer.transcription.completed": {
@@ -356,6 +357,7 @@ function handleRealtimeEvent(message) {
         state.pendingSantaTranscript += normalizeFragment(payload.delta || "");
         setStatus("Santa is speaking");
         resetIdleTimer();
+        updateTranscriptLog();
         break;
       }
       case "response.completed": {
@@ -508,11 +510,18 @@ function updateSummary() {
 function updateTranscriptLog() {
   const logEl = document.getElementById("transcript-log");
   if (!logEl) return;
-  if (!state.transcriptLog.length) {
+  if (!state.transcriptLog.length && !state.pendingUserTranscript && !state.pendingSantaTranscript) {
     logEl.textContent = "No conversation yet.";
     return;
   }
-  const recent = state.transcriptLog.slice(-12);
+  const temp = [...state.transcriptLog];
+  if (state.pendingUserTranscript) {
+    temp.push({ speaker: state.childName || "Child", text: state.pendingUserTranscript });
+  }
+  if (state.pendingSantaTranscript) {
+    temp.push({ speaker: "Santa", text: state.pendingSantaTranscript });
+  }
+  const recent = temp.slice(-12);
   logEl.textContent = recent.map((item) => `${item.speaker}: ${item.text}`).join("\n");
 }
 
