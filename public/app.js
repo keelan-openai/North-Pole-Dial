@@ -30,12 +30,12 @@ const state = {
 };
 
 function setStatus(text) {
-  statusEl.textContent = text;
-  callStatusEl.textContent = text;
+  if (statusEl) statusEl.textContent = text;
+  if (callStatusEl) callStatusEl.textContent = text;
 }
 
 function setConnection(text) {
-  connectionStateEl.textContent = text;
+  if (connectionStateEl) connectionStateEl.textContent = text;
 }
 
 function readChildProfileForm() {
@@ -85,8 +85,8 @@ function restoreProfile() {
 }
 
 function updateButtons({ connecting = false, connected = false } = {}) {
-  callAction.disabled = connecting || connected;
-  hangupBtn.disabled = !connected;
+  if (callAction) callAction.disabled = connecting || connected;
+  if (hangupBtn) hangupBtn.disabled = !connected;
 }
 
 if (profileToggle && profileBody) {
@@ -113,8 +113,12 @@ if (formEl) {
   });
 }
 
-callAction.addEventListener("click", () => startCall());
-hangupBtn.addEventListener("click", () => endCall("Call ended"));
+if (callAction) {
+  callAction.addEventListener("click", () => startCall());
+}
+if (hangupBtn) {
+  hangupBtn.addEventListener("click", () => endCall("Call ended"));
+}
 
 async function startCall() {
   if (state.connecting || state.connected) {
@@ -130,7 +134,7 @@ async function startCall() {
   state.connecting = true;
   setStatus("Dialing the North Pole...");
   setConnection("Connecting");
-  callAction.textContent = "Connecting...";
+  if (callAction) callAction.textContent = "Connecting...";
   updateButtons({ connecting: true });
   if (formEl) {
     const profile = readChildProfileForm();
@@ -166,7 +170,7 @@ async function startCall() {
     state.connected = true;
     setStatus("On the line with Santa");
     setConnection("Live");
-    callAction.textContent = "Santa is on";
+    if (callAction) callAction.textContent = "Santa is on";
     updateButtons({ connected: true });
   } catch (error) {
     console.error(error);
@@ -177,7 +181,7 @@ async function startCall() {
     state.connecting = false;
     if (!state.connected) {
       updateButtons({ connecting: false, connected: false });
-      callAction.textContent = "Start Call";
+      if (callAction) callAction.textContent = "Start Call";
     }
   }
 }
@@ -369,7 +373,7 @@ function endCall(reason = "") {
   state.connected = false;
   setStatus(reason || "Call ended");
   setConnection("Disconnected");
-  callAction.textContent = "Start Call";
+  if (callAction) callAction.textContent = "Start Call";
   updateButtons({ connected: false });
 }
 
