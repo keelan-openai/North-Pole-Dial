@@ -268,6 +268,13 @@ body {
   font-size: 13px;
 }
 
+.form-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
 .info-text {
   margin: 6px 0;
   line-height: 1.6;
@@ -310,19 +317,20 @@ body {
 .field input,
 .field textarea {
   width: 100%;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(15, 31, 45, 0.18);
   border-radius: 12px;
   padding: 12px 14px;
   color: #0f1f2d;
   font: inherit;
   outline: none;
-  transition: border 0.2s ease, transform 0.2s ease;
+  transition: border 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .field input:focus,
 .field textarea:focus {
-  border-color: var(--gold);
+  border-color: #ffcc5c;
+  box-shadow: 0 0 0 1px rgba(255, 204, 92, 0.6);
   transform: translateY(-1px);
 }
 
@@ -355,6 +363,12 @@ button {
   color: #0f1f2d;
   border: 1px solid rgba(15, 31, 45, 0.15);
   font-weight: 700;
+}
+
+.danger-ghost {
+  background: rgba(179, 18, 47, 0.08);
+  color: #b3122f;
+  border-color: rgba(179, 18, 47, 0.25);
 }
 
 .call-panel {

@@ -6,6 +6,7 @@ const connectionStateEl = document.getElementById("connection-state");
 const formEl = document.getElementById("child-form");
 const profileToggle = document.getElementById("profile-toggle");
 const profileBody = document.getElementById("profile-body");
+const clearProfileBtn = document.getElementById("clear-profile");
 const audioEl = document.getElementById("santa-audio");
 
 // Shared voice selection for the session and greeting (must match supported list)
@@ -110,6 +111,16 @@ if (formEl) {
     state.childName = profile.name || "Kiddo";
     persistProfile(profile);
     setStatus("Profile saved for Santa");
+  });
+}
+
+if (clearProfileBtn) {
+  clearProfileBtn.addEventListener("click", () => {
+    state.childProfile = {};
+    state.childName = "Kiddo";
+    persistProfile({});
+    setChildProfileForm({});
+    setStatus("Profile cleared");
   });
 }
 
