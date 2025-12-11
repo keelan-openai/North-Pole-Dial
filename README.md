@@ -33,7 +33,7 @@ Festive voice call experience that connects a browser directly to the OpenAI Rea
 - `TRANSCRIPT_DIR` – where transcript `.txt` files are written (defaults to `./data/transcripts`).
 
 ## How it works
-- **Token minting:** `POST /api/session` calls `https://api.openai.com/v1/realtime/sessions` with your key to create an ephemeral `client_secret`. It receives child details from the client form, opens a transcript file, and returns the Santa instruction string to the browser.
+- **Token minting:** `POST /api/session` calls `https://api.openai.com/v1/realtime/sessions` with your key to create an ephemeral `client_secret`. It receives child details from the client form, opens a transcript file (to `TRANSCRIPT_DIR`), and returns the Santa instruction string to the browser.
 - **Realtime call:** The browser creates an `RTCPeerConnection`, sends its offer (mic track + data channel) to OpenAI with the `client_secret`, and receives an answer. Audio comes back as a remote track; Realtime events arrive on the data channel.
 - **Session setup:** Once the data channel opens, the client sends `session.update` with persona instructions, VAD, and transcription settings, then sends a tiny greeting request so Santa starts the conversation.
 - **Transcripts:** Realtime events `input_audio_buffer.transcription.completed` (child) and `response.completed` (Santa) are pushed to `/api/transcript`, which appends lines like `[timestamp] Santa: ...` to `data/transcripts/santa-call-<uuid>.txt`. Nothing is rendered on screen.
