@@ -358,15 +358,18 @@ function handleRealtimeEvent(message) {
         resetIdleTimer();
         break;
       }
-      case "response.completed": {
-        if (state.pendingSantaTranscript) {
-          pushTranscript([{ speaker: "Santa", text: state.pendingSantaTranscript }]);
-          state.transcriptHistory.santa.push(state.pendingSantaTranscript);
-          state.transcriptLog.push({ speaker: "Santa", text: state.pendingSantaTranscript });
-          updateSummary();
-          updateTranscriptLog();
+      case "response.output_text.delta": {
+        const delta = normalizeFragment(payload.delta || payload.text);
+        if (delta) {
+          state.pendingSantaTranscript += delta;
+          setStatus("Santa is speaking");
         }
-        state.pendingSantaTranscript = "";
+        break;
+      }
+      case "response.output_text.done":
+      case "response.output_text.completed":
+      case "response.completed": {
+        finalizeSantaTranscript();
         state.completedTurns += 1;
         if (state.completedTurns % TURN_REFRESH_INTERVAL === 0) {
           sendSessionConfig();
@@ -524,6 +527,20 @@ function updateTranscriptLog() {
   const recent = temp.slice(-12);
   const lines = recent.map((item) => `${item.speaker}: ${item.text}`).join("\n");
   logEl.textContent = lines;
+}
+
+function finalizeSantaTranscript() {
+  const text = state.pendingSantaTranscript?.trim();
+  if (!text) {
+    state.pendingSantaTranscript = "";
+    return;
+  }
+  pushTranscript([{ speaker: "Santa", text }]);
+  state.transcriptHistory.santa.push(text);
+  state.transcriptLog.push({ speaker: "Santa", text });
+  state.pendingSantaTranscript = "";
+  updateSummary();
+  updateTranscriptLog();
 }
 
 function resetIdleTimer() {
