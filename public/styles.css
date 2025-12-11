@@ -388,118 +388,110 @@ button {
   z-index: 0;
 }
 
-.santa-avatar {
+.santa-phone {
   position: relative;
   z-index: 1;
   margin: 0 auto 14px;
-  width: 120px;
-  height: 140px;
-  background: linear-gradient(180deg, #fff2df, #f7d7b6);
-  border-radius: 60px 60px 70px 70px;
-  box-shadow: 0 12px 30px rgba(15, 31, 45, 0.18);
-  overflow: hidden;
-}
-
-.santa-avatar .hat {
-  position: absolute;
-  top: -8px;
-  left: -6px;
   width: 140px;
-  height: 70px;
-  background: linear-gradient(135deg, #b3122f, #e52b4d);
-  border-radius: 70px;
-  box-shadow: inset 0 -6px 0 rgba(255, 255, 255, 0.8);
+  height: 160px;
 }
 
-.santa-avatar .face {
+.phone-halo {
   position: absolute;
-  inset: 40px 10px 16px 10px;
-  background: #f7d7be;
-  border-radius: 30px;
+  inset: -10px;
+  background: radial-gradient(circle at 60% 20%, rgba(255, 220, 150, 0.25), transparent 55%),
+    radial-gradient(circle at 30% 70%, rgba(185, 245, 216, 0.18), transparent 45%);
+  filter: blur(12px);
 }
 
-.santa-avatar .eyes {
+.santa-phone .phone-body {
+  position: absolute;
+  inset: 14px;
+  background: linear-gradient(135deg, #b3122f, #e73d59);
+  border-radius: 22px;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.2);
+}
+
+.santa-phone .phone-speaker {
   position: absolute;
   top: 14px;
-  left: 20px;
-  right: 20px;
-  height: 12px;
-  display: flex;
-  justify-content: space-between;
-}
-
-.santa-avatar .eyes::before,
-.santa-avatar .eyes::after {
-  content: "";
-  width: 14px;
-  height: 14px;
-  background: #0f2c2f;
-  border-radius: 50%;
-  box-shadow: 0 6px 0 0 #f7d7be;
-}
-
-.santa-avatar .face::before {
-  content: "";
-  position: absolute;
-  top: 30px;
   left: 50%;
-  width: 14px;
-  height: 10px;
-  background: #e6a177;
-  border-radius: 50%;
+  width: 34px;
+  height: 7px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 4px;
   transform: translateX(-50%);
 }
 
-.santa-avatar .face::after {
-  content: "";
+.santa-phone .phone-dial.big {
   position: absolute;
-  top: 36px;
+  bottom: 20px;
   left: 50%;
-  width: 40px;
-  height: 10px;
+  width: 48px;
+  height: 48px;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.7));
+  border-radius: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 8px 14px rgba(0, 0, 0, 0.12);
+}
+
+.santa-phone .phone-bell {
+  position: absolute;
+  top: -2px;
+  width: 22px;
+  height: 22px;
+  background: #f6d67a;
+  border-radius: 50%;
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.12);
+}
+
+.santa-phone .phone-bell.left {
+  left: 10px;
+}
+
+.santa-phone .phone-bell.right {
+  right: 10px;
+}
+
+.santa-phone .phone-hat {
+  position: absolute;
+  top: -14px;
+  left: -2px;
+  width: 148px;
+  height: 58px;
+}
+
+.santa-phone .hat-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 148px;
+  height: 46px;
+  background: linear-gradient(135deg, #b3122f, #e73d59);
+  border-radius: 24px;
+  transform: rotate(-4deg);
+}
+
+.santa-phone .hat-brim {
+  position: absolute;
+  bottom: 4px;
+  left: -4px;
+  width: 156px;
+  height: 18px;
   background: #fff4e5;
-  border-radius: 10px;
-  transform: translateX(-50%);
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 }
 
-.santa-avatar .cheek {
+.santa-phone .pom {
   position: absolute;
-  top: 30px;
-  width: 12px;
-  height: 12px;
-  background: rgba(255, 166, 158, 0.7);
+  top: -4px;
+  right: 8px;
+  width: 18px;
+  height: 18px;
+  background: #fff4e5;
   border-radius: 50%;
-}
-
-.santa-avatar .cheek.left {
-  left: 22px;
-}
-
-.santa-avatar .cheek.right {
-  right: 22px;
-}
-
-.santa-avatar .mouth {
-  position: absolute;
-  top: 44px;
-  left: 50%;
-  width: 26px;
-  height: 10px;
-  border-bottom: 3px solid #b35a3a;
-  border-radius: 0 0 12px 12px;
-  transform: translateX(-50%);
-}
-
-.santa-avatar .beard {
-  position: absolute;
-  bottom: -8px;
-  left: -8px;
-  right: -8px;
-  height: 80px;
-  background: #fff9f1;
-  border-radius: 80px;
-  box-shadow: inset 0 6px 0 rgba(247, 209, 92, 0.3);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
 }
 
 .call-meta {
