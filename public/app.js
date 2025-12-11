@@ -13,7 +13,7 @@ const summaryEl = document.getElementById("transcript-summary");
 const audioEl = document.getElementById("santa-audio");
 
 // Shared voice selection for the session and greeting (must match supported list)
-const VOICE = "cedar";
+const VOICE = "sage";
 const TURN_REFRESH_INTERVAL = 4; // resend persona prompt every N turns
 const IDLE_PROMPT_MS = 20000;
 const DEBUG_TRANSCRIPT = false;
