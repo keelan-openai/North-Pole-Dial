@@ -159,7 +159,7 @@ app.post("/api/summarize", async (req, res) => {
           },
         ],
         temperature: 0.4,
-        max_tokens: 160,
+        max_completion_tokens: 160,
       }),
     });
 
