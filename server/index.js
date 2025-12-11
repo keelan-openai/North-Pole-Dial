@@ -9,6 +9,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const MODEL =
   process.env.MODEL || "gpt-4o-realtime-preview-2024-12-17";
+const SUMMARY_MODEL = process.env.SUMMARY_MODEL || "gpt-4o-mini";
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const VOICE = process.env.SANTA_VOICE || "cedar";
 const DEFAULT_TRANSCRIPT_DIR = process.env.VERCEL
@@ -112,6 +113,67 @@ app.post("/api/transcript", async (req, res) => {
   } catch (error) {
     console.error("Transcript append failed", error);
     return res.status(500).json({ error: "Could not write transcript" });
+  }
+});
+
+/**
+ * Summarize a completed conversation using a lightweight model.
+ */
+app.post("/api/summarize", async (req, res) => {
+  if (!OPENAI_API_KEY) {
+    return res
+      .status(500)
+      .json({ error: "OPENAI_API_KEY missing from environment." });
+  }
+
+  const turns = Array.isArray(req.body?.turns) ? req.body.turns : [];
+  const model = req.body?.model || SUMMARY_MODEL;
+
+  if (!turns.length) {
+    return res.status(400).json({ error: "No turns provided for summary." });
+  }
+
+  const conversation = turns
+    .map((t) => `${t.speaker || "Unknown"}: ${t.text || ""}`.trim())
+    .join("\n");
+
+  try {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${OPENAI_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model,
+        messages: [
+          {
+            role: "system",
+            content:
+              "You are Santa's note-taker. Write a concise, parent-friendly call summary in 2-3 sentences. Include kids' names/pronouns/ages if present, key wishlist items, favorites, wins, and any boundaries or redirections Santa gave. Do not promise gifts. Keep it under 80 words.",
+          },
+          {
+            role: "user",
+            content: `Conversation transcript:\n${conversation}\n\nReturn only the summary text.`,
+          },
+        ],
+        temperature: 0.4,
+        max_tokens: 160,
+      }),
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      return res.status(response.status).json({ error: errText || "Summary failed" });
+    }
+
+    const data = await response.json();
+    const summary =
+      data?.choices?.[0]?.message?.content?.trim() || "Summary unavailable right now.";
+    return res.json({ summary });
+  } catch (error) {
+    console.error("Summary generation failed", error);
+    return res.status(500).json({ error: "Could not generate summary" });
   }
 });
 

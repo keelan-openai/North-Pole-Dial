@@ -17,6 +17,7 @@ const VOICE = "cedar";
 const TURN_REFRESH_INTERVAL = 4; // resend persona prompt every N turns
 const IDLE_PROMPT_MS = 20000;
 const DEBUG_TRANSCRIPT = false;
+const SUMMARY_MODEL = "gpt-4o-mini";
 
 const state = {
   childName: "Kiddo",
@@ -24,6 +25,7 @@ const state = {
   transcriptId: null,
   instructions: "",
   personaPrompt: "",
+  modelSummary: "",
   connecting: false,
   connected: false,
   pendingUserTranscript: "",
@@ -197,6 +199,7 @@ async function startCall() {
     state.transcriptId = data.transcriptId;
     state.model = data.model;
     state.childName = data.profileName || "Kiddo";
+    state.modelSummary = "";
     state.transcriptHistory = { user: [], santa: [] };
     state.transcriptLog = [];
     updateSummary();
@@ -511,6 +514,10 @@ function readChildren() {
 
 function updateSummary() {
   if (!summaryEl) return;
+  if (state.modelSummary) {
+    summaryEl.textContent = state.modelSummary;
+    return;
+  }
   const kidLines = state.transcriptHistory.user || [];
   const santaLines = state.transcriptHistory.santa || [];
   if (!kidLines.length && !santaLines.length) {
@@ -597,6 +604,37 @@ function escapeHtml(str = "") {
     .replace(/'/g, "&#039;");
 }
 
+async function summarizeConversation() {
+  if (!state.transcriptLog.length) return;
+  setSummary("Summarizing your call...");
+  try {
+    const response = await fetch("/api/summarize", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        turns: state.transcriptLog,
+        model: SUMMARY_MODEL,
+      }),
+    });
+    if (!response.ok) throw new Error(await response.text());
+    const data = await response.json();
+    if (data.summary) {
+      state.modelSummary = data.summary.trim();
+      updateSummary();
+      return;
+    }
+    throw new Error("No summary returned");
+  } catch (error) {
+    console.error("Summary failed", error);
+    setSummary("Summary unavailable right now.");
+  }
+}
+
+function setSummary(text) {
+  if (!summaryEl) return;
+  summaryEl.textContent = text;
+}
+
 function resetIdleTimer() {
   if (state.idleTimer) {
     clearTimeout(state.idleTimer);
@@ -646,14 +684,14 @@ function endCall(reason = "") {
     const text = state.pendingUserTranscript;
     flush.push({ speaker: state.childName || "Child", text });
     state.transcriptHistory.user.push(text);
-    state.transcriptLog.push({ speaker: state.childName || "Child", text });
+    addLogEntry(state.childName || "Child", text);
     state.pendingUserTranscript = "";
   }
   if (state.pendingSantaTranscript) {
     const text = state.pendingSantaTranscript;
     flush.push({ speaker: "Santa", text });
     state.transcriptHistory.santa.push(text);
-    state.transcriptLog.push({ speaker: "Santa", text });
+    addLogEntry("Santa", text);
     state.pendingSantaTranscript = "";
   }
   if (flush.length) {
@@ -667,6 +705,9 @@ function endCall(reason = "") {
   updateButtons({ connected: false });
   updateSummary();
   updateTranscriptLog();
+  if (state.transcriptLog.length) {
+    summarizeConversation();
+  }
 }
 
 function cleanupConnection() {
