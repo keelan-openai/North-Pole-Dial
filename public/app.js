@@ -1,5 +1,4 @@
 const callAction = document.getElementById("call-action");
-const hangupBtn = document.getElementById("hangup");
 const statusEl = document.querySelector("[data-status]");
 const callStatusEl = document.querySelector("[data-call-status]");
 const connectionStateEl = document.getElementById("connection-state");
@@ -102,8 +101,7 @@ function restoreProfile() {
 }
 
 function updateButtons({ connecting = false, connected = false } = {}) {
-  if (callAction) callAction.disabled = connecting || connected;
-  if (hangupBtn) hangupBtn.disabled = !connected;
+  if (callAction) callAction.disabled = connecting;
 }
 
 if (profileToggle && profileBody) {
@@ -148,10 +146,13 @@ if (addChildBtn && childListEl) {
 }
 
 if (callAction) {
-  callAction.addEventListener("click", () => startCall());
-}
-if (hangupBtn) {
-  hangupBtn.addEventListener("click", () => endCall("Call ended"));
+  callAction.addEventListener("click", () => {
+    if (state.connected) {
+      endCall("Call ended");
+    } else {
+      startCall();
+    }
+  });
 }
 
 async function startCall() {
@@ -168,7 +169,7 @@ async function startCall() {
   state.connecting = true;
   setStatus("Dialing the North Pole... wait just a minute and Santa will say hello.");
   setConnection("Connecting");
-  if (callAction) callAction.textContent = "Connecting...";
+  if (callAction) callAction.textContent = "Ringing...";
   updateButtons({ connecting: true });
   if (formEl) {
     const profile = readChildProfileForm();
@@ -209,7 +210,7 @@ async function startCall() {
     state.connected = true;
     setStatus("On the line with Santa");
     setConnection("Live");
-    if (callAction) callAction.textContent = "Santa is on";
+    if (callAction) callAction.textContent = "Hang Up";
     updateButtons({ connected: true });
     resetIdleTimer();
   } catch (error) {
@@ -734,7 +735,7 @@ function endCall(reason = "") {
   state.connected = false;
   setStatus(reason || "Call ended");
   setConnection("Disconnected");
-  if (callAction) callAction.textContent = "Start Call";
+  if (callAction) callAction.textContent = "Call Santa";
   updateButtons({ connected: false });
   updateSummary();
   updateTranscriptLog();
