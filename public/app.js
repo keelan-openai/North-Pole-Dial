@@ -9,6 +9,7 @@ const clearProfileBtn = document.getElementById("clear-profile");
 const childListEl = document.getElementById("child-list");
 const addChildBtn = document.getElementById("add-child");
 const summaryEl = document.getElementById("transcript-summary");
+const voiceSelectEl = document.getElementById("voice-select");
 const audioEl = document.getElementById("santa-audio");
 
 // Shared voice selection for the session and greeting (must match supported list)
@@ -24,6 +25,7 @@ const state = {
   transcriptId: null,
   instructions: "",
   personaPrompt: "",
+  voice: VOICE,
   modelSummary: "",
   connecting: false,
   connected: false,
@@ -159,6 +161,7 @@ async function startCall() {
   if (state.connecting || state.connected) {
     return;
   }
+  state.voice = getSelectedVoice();
 
   if (!navigator.mediaDevices?.getUserMedia) {
     setStatus("Mic access is required");
@@ -182,7 +185,7 @@ async function startCall() {
     const sessionResponse = await fetch("/api/session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ child: state.childProfile }),
+      body: JSON.stringify({ child: state.childProfile, voice: state.voice }),
     });
 
     if (!sessionResponse.ok) {
@@ -303,7 +306,7 @@ function sendSessionConfig() {
     type: "session.update",
     session: {
       instructions: state.personaPrompt || state.instructions,
-      voice: VOICE,
+      voice: state.voice || VOICE,
       input_audio_format: "pcm16",
       output_audio_format: "pcm16",
       turn_detection: { type: "server_vad", threshold: 0.5 },
@@ -323,7 +326,7 @@ function sendWarmGreeting() {
       type: "response.create",
       response: {
         modalities: ["text", "audio"],
-        voice: VOICE,
+        voice: state.voice || VOICE,
         input_text: greeting,
       },
     })
@@ -685,7 +688,7 @@ function promptIdle() {
     type: "response.create",
     response: {
       modalities: ["text", "audio"],
-      voice: VOICE,
+      voice: state.voice || VOICE,
       input_text:
         "I haven't heard you for a bit. Would you like a quick fun story or a silly Santa joke?",
     },
@@ -786,4 +789,15 @@ function waitForIceGatheringComplete(pc) {
 updateButtons({ connected: false, connecting: false });
 restoreProfile();
 hydrateChildren(state.childProfile.children || []);
+if (voiceSelectEl) {
+  voiceSelectEl.value = VOICE;
+  voiceSelectEl.addEventListener("change", () => {
+    state.voice = getSelectedVoice();
+  });
+}
 updateTranscriptLog();
+
+function getSelectedVoice() {
+  const selection = voiceSelectEl?.value;
+  return selection || VOICE;
+}
