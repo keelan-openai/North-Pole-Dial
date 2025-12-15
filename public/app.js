@@ -735,6 +735,7 @@ function endCall(reason = "") {
     pushTranscript(flush);
   }
   cleanupConnection();
+  state.connecting = false;
   state.connected = false;
   setStatus(reason || "Call ended");
   setConnection("Disconnected");
