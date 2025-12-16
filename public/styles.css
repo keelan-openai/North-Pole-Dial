@@ -451,18 +451,19 @@ select:focus {
 }
 
 .cta {
-  background: linear-gradient(135deg, #ffcc5c, #ffe9b4);
-  color: #2f1b0a;
+  background: linear-gradient(135deg, #1c7c54, #27a370);
+  color: #f6fff9;
   border-radius: 14px;
   padding: 12px 20px;
   font-weight: 800;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  box-shadow: 0 10px 25px rgba(28, 124, 84, 0.28);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
 }
 
 .cta:active {
   transform: translateY(1px);
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22);
+  box-shadow: 0 8px 18px rgba(28, 124, 84, 0.32);
+  filter: brightness(0.95);
 }
 
 .ghost {
@@ -473,6 +474,22 @@ select:focus {
   color: #0f1f2d;
   border: 1px solid rgba(15, 31, 45, 0.15);
   font-weight: 700;
+}
+
+.ghost#profile-toggle {
+  background: linear-gradient(135deg, #eef7ff, #dfefff);
+  color: #0f1f2d;
+  border-color: rgba(15, 31, 45, 0.2);
+  min-width: 44px;
+  text-align: center;
+  font-size: 18px;
+  padding: 8px 12px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ghost#profile-toggle:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(15, 31, 45, 0.12);
 }
 
 .danger-ghost {
