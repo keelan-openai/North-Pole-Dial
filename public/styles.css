@@ -351,8 +351,8 @@ body {
 .form {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-top: 8px;
+  gap: 8px;
+  margin-top: 4px;
 }
 
 .two-up {
@@ -364,28 +364,28 @@ body {
 .three-up {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 10px;
+  gap: 8px;
 }
 
 .field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
   font-weight: 600;
   color: rgba(15, 31, 45, 0.85);
 }
 
 .child-list {
-  margin-top: 10px;
+  margin-top: 6px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .child-row {
   display: grid;
   grid-template-columns: 1.1fr 1fr 110px auto;
-  gap: 8px;
+  gap: 6px;
   align-items: center;
 }
 
@@ -410,9 +410,9 @@ body {
 .field textarea {
   width: 100%;
   background: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(15, 31, 45, 0.18);
-  border-radius: 12px;
-  padding: 12px 14px;
+  border: 1px solid rgba(15, 31, 45, 0.16);
+  border-radius: 10px;
+  padding: 10px 12px;
   color: #0f1f2d;
   font: inherit;
   outline: none;
@@ -468,26 +468,22 @@ select:focus {
 
 .ghost {
   align-self: flex-start;
-  padding: 10px 14px;
-  border-radius: 10px;
-  background: rgba(15, 31, 45, 0.05);
+  padding: 9px 12px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #f5f7fb, #e8edf7);
   color: #0f1f2d;
-  border: 1px solid rgba(15, 31, 45, 0.15);
+  border: 1px solid rgba(15, 31, 45, 0.14);
   font-weight: 700;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
 
 .ghost#profile-toggle {
-  background: linear-gradient(135deg, #eef7ff, #dfefff);
-  color: #0f1f2d;
-  border-color: rgba(15, 31, 45, 0.2);
   min-width: 44px;
   text-align: center;
   font-size: 18px;
-  padding: 8px 12px;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.ghost#profile-toggle:hover {
+.ghost:hover {
   transform: translateY(-1px);
   box-shadow: 0 6px 14px rgba(15, 31, 45, 0.12);
 }
