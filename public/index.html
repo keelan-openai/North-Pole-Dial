@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NORTH POLE HOTLINE</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- Lightweight form styling via Pico CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+    />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -117,7 +122,7 @@
             <div>
               <h2>Note for Parents</h2>
             </div>
-            <button class="ghost small" id="profile-toggle" type="button">Show form</button>
+            <button class="ghost small" id="profile-toggle" type="button" aria-expanded="false">▼</button>
           </div>
           <div class="collapsible" id="profile-body" hidden>
             <form id="child-form" class="form">

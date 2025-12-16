@@ -432,6 +432,24 @@ button {
   font: inherit;
 }
 
+select {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(15, 31, 45, 0.18);
+  border-radius: 12px;
+  padding: 12px 14px;
+  color: #0f1f2d;
+  font: inherit;
+  outline: none;
+  transition: border 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+select:focus {
+  border-color: #ffcc5c;
+  box-shadow: 0 0 0 1px rgba(255, 204, 92, 0.6);
+  transform: translateY(-1px);
+}
+
 .cta {
   background: linear-gradient(135deg, #ffcc5c, #ffe9b4);
   color: #2f1b0a;

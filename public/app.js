@@ -111,10 +111,12 @@ if (profileToggle && profileBody) {
     const isHidden = profileBody.hasAttribute("hidden");
     if (isHidden) {
       profileBody.removeAttribute("hidden");
-      profileToggle.textContent = "Hide form";
+      profileToggle.textContent = "▲";
+      profileToggle.setAttribute("aria-expanded", "true");
     } else {
       profileBody.setAttribute("hidden", "true");
-      profileToggle.textContent = "Show form";
+      profileToggle.textContent = "▼";
+      profileToggle.setAttribute("aria-expanded", "false");
     }
   });
 }
